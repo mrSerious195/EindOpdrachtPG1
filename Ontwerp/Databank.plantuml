@@ -1,0 +1,52 @@
+@startuml databank
+title database
+' configuration
+hide circle
+skinparam linetype ortho
+
+class FirstName{
+country_id: int<foreign key>
+name : varchar(30)
+id : int <key>
+frequency : int
+gender: char
+}
+
+class LastName{
+country_id: int<foreign key>
+id : int <key>
+name : varchar(30)
+frequency : int
+gender: char
+}
+
+class Country{
+    id: int
+    name: varchar(30)
+}
+
+class City{
+    country_id: int
+    id:int
+    zipcode: varchar(20)
+    name: varchar(30)
+}
+
+class Road{
+    city_id: int
+    id:int
+    zipcode: varchar(20)
+    name: varchar(30)
+}
+
+Country "id"-U-"country_id" City
+
+Country "id"--"country_id" FirstName
+Country "id"--"country_id" LastName
+
+Road "city_id" -- "id" City
+
+
+
+
+@enduml
