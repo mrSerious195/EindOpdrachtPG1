@@ -11,7 +11,7 @@ Console.WriteLine($"loaded {straten.Count} straten");
 for(int i = 0;i<100 ; i++)
 {
    Straat s = straten[i];
-    Console.WriteLine($"De straat {s.Naam} in {s.Stad.naam} in {s.Stad.land.naam}");
+    Console.WriteLine($"De straat {s.Naam} in {s.Stad.Naam} in {s.Stad.Land.Naam}");
 }
 
 

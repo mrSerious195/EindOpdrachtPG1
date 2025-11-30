@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KlantenSimulatorBL.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,22 @@ namespace KlantenSimulatorBL.Domein
         }
 
         public string HuisNr {  get; set; }
-        public Straat Straat { get; set; }
+
+        private Straat straat;
+        public Straat Straat { get=>straat;
+            set
+            {
+                if (value == null)
+                {
+                    throw new KlantenException("Adress.Straat is null");
+                }
+                else
+                {
+                    straat = value;
+                }
+            }
+                
+                }
 
 
     }

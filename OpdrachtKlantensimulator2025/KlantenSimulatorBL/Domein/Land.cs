@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KlantenSimulatorBL.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,28 +12,40 @@ namespace KlantenSimulatorBL.Domein
 
         public Land(string naam)
         {
-            this.naam = naam;
+            this.Naam = naam;
         }
 
         public Land(int? id, string naam)
         {
-            this.id = id;
-            this.naam = naam;
+            this.Id = id;
+            this.Naam = naam;
         }
 
 
-        public int? id;
-        public string naam;
+        public int? Id { get; set; }
+
+        private string naam;
+        public string Naam {  get=> naam; 
+            set {
+                if (string.IsNullOrEmpty(value)) {
+                    throw new KlantenException("Land.Naam is null or empty");
+                }
+                else
+                {
+                    naam = value;
+                } 
+            
+            } }
 
         public override bool Equals(object? obj)
         {
             return obj is Land land &&
-                   naam == land.naam;
+                   Naam == land.Naam;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(naam);
+            return HashCode.Combine(Naam);
         }
     }
 }

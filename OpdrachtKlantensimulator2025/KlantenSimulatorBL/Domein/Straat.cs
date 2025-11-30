@@ -1,5 +1,7 @@
 ﻿
 
+using KlantenSimulatorBL.Exceptions;
+
 namespace KlantenSimulatorBL.Domein
 {
     public class Straat
@@ -18,8 +20,39 @@ namespace KlantenSimulatorBL.Domein
         }
 
         public int? Id {  get; set; }
-        public Stad Stad {  get; set; }
-        public string Naam {  get; set; }
+
+        private Stad stad;
+        public Stad Stad {  get=>stad;
+            set {
+                if (value != null)
+                {
+                    stad = value;
+                }
+                else
+                {
+                    throw new KlantenException("Straat.Stad is null");
+                }
+            
+            } }
+
+
+        private string naam;
+        public string Naam
+        {
+            get => naam;
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new KlantenException("Straat.Naam is null or empty");
+                }
+                else
+                {
+                    naam = value;
+                }
+
+            }
+        }
 
         public override bool Equals(object? obj)
         {
