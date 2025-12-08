@@ -9,36 +9,34 @@ namespace KlantenSimulatorBL.Domein
 {
     public class NaamInfo
     {
-        public NaamInfo(Land land, string naam, int frequency, GramatischGeslacht geslacht, bool isVoornaam)
+        public NaamInfo(string naam, int frequency, GramaticaalGeslacht geslacht, NaamSoort naamsoort)
         {
-            Land = land;
+
             Naam = naam;
             Frequency = frequency;
             Geslacht = geslacht;
-            IsVoornaam = isVoornaam;
+            NaamSoort = naamsoort;
         }
 
-        public NaamInfo(int? id, Land land, string naam, int frequency, GramatischGeslacht geslacht, bool isVoornaam )
+        public NaamInfo(int? id, string naam, int frequency, GramaticaalGeslacht geslacht, NaamSoort naamsoort )
         {
             Id = id;
-            Land = land;
+      
             Naam = naam;
             Frequency = frequency;
             Geslacht = geslacht;
-            IsVoornaam = isVoornaam;  
+            NaamSoort = naamsoort;  
         }
 
         public int? Id {  get; set; }
-
-        public Land Land { get; set; }
         public string Naam { get; set; }
         public int Frequency { get; set; }
 
-        public GramatischGeslacht Geslacht { get; set; }
+        public GramaticaalGeslacht Geslacht { get; set; }
 
-        public bool IsVoornaam { get; set; }
+        public NaamSoort NaamSoort { get; set; }
 
-        public bool IsFamilienaam { get => !IsVoornaam; set { IsVoornaam = !value; } }
+       
 
 
 

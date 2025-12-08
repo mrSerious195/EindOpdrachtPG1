@@ -27,7 +27,7 @@ namespace KlantenSimulatorBL.Domein
         private string naam;
         public string Naam {  get=> naam; 
             set {
-                if (string.IsNullOrEmpty(value)) {
+                if (string.IsNullOrEmpty(value)|| string.IsNullOrEmpty(value.Trim())) {
                     throw new KlantenException("Land.Naam is null or empty");
                 }
                 else

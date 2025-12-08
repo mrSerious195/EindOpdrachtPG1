@@ -8,7 +8,7 @@ namespace KlantenSimulatorBL.Exceptions
 {
     public class KlantenException : Exception
     {
-        public List<string> Errors;
+        public List<string> Errors = [];
 
 
         public KlantenException()

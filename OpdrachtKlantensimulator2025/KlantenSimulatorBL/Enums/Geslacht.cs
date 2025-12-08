@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.Enums
 {
-    public enum Geslacht: byte
+    public enum Geslacht:byte
     {
-        Manelijk,
-        Vrouwlijk
+        Man=0,
+        Vrouw=1,
     }
 }

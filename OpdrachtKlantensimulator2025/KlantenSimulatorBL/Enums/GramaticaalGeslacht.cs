@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.Enums
 {
-    public enum GramatischGeslacht:byte
+    public enum GramaticaalGeslacht:byte
     {
-        Mannelijk=0,
-        Vrouwlijk=1,
-        onzijdig = 2,
+        Man=0,
+        Vrouw=1,
+        Onzijdig=2
     }
 }

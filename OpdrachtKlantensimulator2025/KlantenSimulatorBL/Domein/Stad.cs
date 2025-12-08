@@ -37,7 +37,7 @@ namespace KlantenSimulatorBL.Domein
             get => naam;
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value)|| string.IsNullOrEmpty(value.Trim()))
                 {
                     throw new KlantenException("Stad.Naam is null or empty");
                 }
