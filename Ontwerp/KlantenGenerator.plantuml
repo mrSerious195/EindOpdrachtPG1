@@ -1,0 +1,107 @@
+@startuml
+class Stad{
+Naam : string
+Id : Int?
+}
+
+class Straad{
+    Naam : string
+Id : Int?
+}
+
+Straad x-- "1\n+Stad" Stad
+class Adress{
+HuisNummer : string
+}
+
+Adress x-- "1\n+Straad" Straad
+class NaamInfo{
+Id : Int?
+Naam : string
+
+}
+
+Enum GramatikaalGeslacht{
+    Mannelijk
+    Vrouwlijk
+    Onzijdig
+}
+
+Enum NaamSoort{
+    VoorNaam
+    AchterNaam
+}
+
+Class DataSet{
+DataSetID : Int?
+}
+
+DataSet x-- "1..*\n+Straten" Straad
+DataSet x-- "1..*\n+Namen" NaamInfo
+
+class Klant{
+    Id : Int?
+    VoorNaam : string
+    AchterNaam : string
+    Geslacht : Geslacht
+    Leeftijd : DateTime
+}
+Enum Geslacht{
+    Man
+    Vrouw
+}
+
+Klant x-- "1\n+Adress" Adress
+
+class Simulatie{
+    + AddKlant(klant : Klant):void
+    + RemoveKlant (klant : Klant): void
+}
+
+Simulatie x--"1..*+Klanten" Klant
+
+class DataSetManager{
+
+}
+
+interface IDataSetRepo{
+
+}
+
+DataSetManager x--"1\n+DataSetRepo"IDataSetRepo
+
+DataSetManager x--"0..*\n+DataSets"DataSet
+
+
+class SimulatieManager{
+
+}
+
+interface ISimulatieRepo{
+    + VoegSimulatieToe(simulatie Simulatie) : void
+    + GeefInfoVanAllSavedSimulaties() : SimulatieInfoDTO[]
+    + GeefSimulatie(Id : int?): Simulatie
+    + GeefSimulatie(land : string): Simulatie[]
+    + GeefSimulatie(Id : int?): Simulatie[]
+}
+
+Folder DTO{
+ class SimulatieInfoDTO{
+
+ }
+}
+
+SimulatieManager x--"1\n+DataSetRepo"ISimulatieRepo
+
+SimulatieManager x--"0..*\n+DataSets"Simulatie
+
+interface ISimulatieSchrijver{
+
+}
+
+interface IDataSetLezer{
+
+}
+
+
+@enduml
