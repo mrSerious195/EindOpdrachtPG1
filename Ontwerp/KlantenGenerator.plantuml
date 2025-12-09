@@ -61,7 +61,8 @@ class Simulatie{
 Simulatie x--"1..*+Klanten" Klant
 
 class DataSetManager{
-
+ + TryGetDataSet(land : string): DataSet
+ + TryGetDataSet(land : string): DataSet
 }
 
 interface IDataSetRepo{
@@ -74,15 +75,16 @@ DataSetManager x--"0..*\n+DataSets"DataSet
 
 
 class SimulatieManager{
-
+VoegSimulatieToe(simulatie : Simulatie) : void
+VoegSimulatieToe(simulatie : Simulatie) : void
 }
 
 interface ISimulatieRepo{
     + VoegSimulatieToe(simulatie Simulatie) : void
     + GeefInfoVanAllSavedSimulaties() : SimulatieInfoDTO[]
     + GeefSimulatie(Id : int?): Simulatie
-    + GeefSimulatie(land : string): Simulatie[]
-    + GeefSimulatie(Id : int?): Simulatie[]
+    + GeefSimulatieInfoVanLand(land : string): SimulatieInfoDTO[]
+    + GeefSimulatieInfoVanLeverancier(Leverancier : string): SimulatieInfoDTO[]
 }
 
 Folder DTO{
@@ -96,10 +98,11 @@ SimulatieManager x--"1\n+DataSetRepo"ISimulatieRepo
 SimulatieManager x--"0..*\n+DataSets"Simulatie
 
 interface ISimulatieSchrijver{
-
+ + schrijfSimulatie(simulatie : Simulatie) : void
 }
 
 interface IDataSetLezer{
+ + LeesDataSet() : Dataset
 
 }
 

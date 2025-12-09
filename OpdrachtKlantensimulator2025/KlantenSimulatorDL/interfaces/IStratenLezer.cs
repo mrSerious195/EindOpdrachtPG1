@@ -1,13 +1,13 @@
-﻿using System;
+﻿using KlantenSimulatorBL.Domein;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using KlantenSimulatorBL.Domein;
 
-namespace KlantenSimulatorBL.Interfaces
+namespace KlantenSimulatorDatabaseInitialiserDL.interfaces
 {
-    public interface IWegenRepo
+    public interface IStratenLezer
     {
         public List<Straat> GeefAlleStraten();
     }

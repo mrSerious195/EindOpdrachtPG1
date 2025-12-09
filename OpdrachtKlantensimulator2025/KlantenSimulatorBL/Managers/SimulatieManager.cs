@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.Managers
 {
-    internal class SimulatieManager
+    public class SimulatieManager
     {
     }
 }

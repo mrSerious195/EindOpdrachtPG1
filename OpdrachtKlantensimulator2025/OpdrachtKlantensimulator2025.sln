@@ -5,11 +5,15 @@ VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlantenSimulatorBL", "KlantenSimulatorBL\KlantenSimulatorBL.csproj", "{B842D7C6-CF8F-49FD-A2BF-8D0B331C8307}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlantenSimulatorDatabaseInitialiserDL", "KlantenSimulatorDL\KlantenSimulatorDatabaseInitialiserDL.csproj", "{45338E45-D668-419C-88EE-FB339020EB92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlantenSimulatorDLDataSetLezers", "KlantenSimulatorDL\KlantenSimulatorDLDataSetLezers.csproj", "{45338E45-D668-419C-88EE-FB339020EB92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{68247FAE-C4CB-4E6E-8FB9-1328F8510196}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestsKlantenSimulator", "UnitTestsKlantenSimulator\UnitTestsKlantenSimulator.csproj", "{7251F8F1-0562-446E-99EC-819178718FC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlantenSimulatorInitialisationUtils", "KlantenSimulatorUtils\KlantenSimulatorInitialisationUtils.csproj", "{1745F7C1-BF76-4E32-97EE-21D6F7DFCF4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlantenSimulatorDLDatabank", "KlantenSimulatorDLDatabank\KlantenSimulatorDLDatabank.csproj", "{90E9852E-964D-4FE4-BBEA-E5193E674A9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{7251F8F1-0562-446E-99EC-819178718FC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7251F8F1-0562-446E-99EC-819178718FC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7251F8F1-0562-446E-99EC-819178718FC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1745F7C1-BF76-4E32-97EE-21D6F7DFCF4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1745F7C1-BF76-4E32-97EE-21D6F7DFCF4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1745F7C1-BF76-4E32-97EE-21D6F7DFCF4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1745F7C1-BF76-4E32-97EE-21D6F7DFCF4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90E9852E-964D-4FE4-BBEA-E5193E674A9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90E9852E-964D-4FE4-BBEA-E5193E674A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90E9852E-964D-4FE4-BBEA-E5193E674A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90E9852E-964D-4FE4-BBEA-E5193E674A9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.Interfaces
 {
-    public interface INamenRepo
+    public interface ILandDataSetLezer
     {
-        public List<NaamInfo> GeefAlleNamen();
+        public LandDataSet LeesLandDataSet();
     }
 }

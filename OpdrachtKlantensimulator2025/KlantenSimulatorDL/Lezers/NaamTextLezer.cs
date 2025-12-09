@@ -1,6 +1,7 @@
 ﻿using KlantenSimulatorBL.Domein;
 using KlantenSimulatorBL.Enums;
 using KlantenSimulatorBL.Interfaces;
+using KlantenSimulatorDatabaseInitialiserDL.interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,18 +9,19 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KlantenSimulatorDatabaseInitialiserDL
+namespace KlantenSimulatorDatabaseInitialiserDL.Lezers
 {
-    public class NaamTextLezer:INamenRepo
+    public class NaamTextLezer: INamenLezer
     {
         private string _path;
 
-        private Char _seperator;
+        private char _seperator;
 
         private int _naamCol;
         private int? _countCol;
         private NaamSoort _naamSoort;
         private GramaticaalGeslacht _geslacht;
+
 
         public NaamTextLezer(string path, char seperator,int naamCol, int? countCol, NaamSoort naamSoort, GramaticaalGeslacht geslacht)
         {

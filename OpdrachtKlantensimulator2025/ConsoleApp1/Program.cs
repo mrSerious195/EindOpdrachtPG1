@@ -1,34 +1,50 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿
+
+//DataDefinieren
 using KlantenSimulatorBL.Domein;
+using KlantenSimulatorBL.DomeinControlers;
 using KlantenSimulatorBL.Enums;
-using KlantenSimulatorDatabaseInitialiserDL;
-/*Console.WriteLine("Hello, World!");
-string path = @"C:\Users\rowal\Downloads\SourceData\SourceData\Finland\finland_streets2.csv";
-WegTextLezer wtl = new(path,"Finland");
-List<Straat> straten = wtl.GeefAlleStraten();
+using KlantenSimulatorInitialisationUtils.DTO;
+using KlantenSimulatorUtils;
 
-Console.WriteLine($"loaded {straten.Count} straten");
+string StratenPad = @"C:\Users\rowal\Downloads\SourceData\SourceData\België\belgium_streets2.csv";
 
-for(int i = 0;i<100 ; i++)
-{
-   Straat s = straten[i];
-    Console.WriteLine($"De straat {s.Naam} in {s.Stad.Naam} in {s.Stad.Land.Naam}");
-}
-*/
+ConstructorNaamTextLezerDTO voornaamM = new ConstructorNaamTextLezerDTO(
+    @"C:\Users\rowal\Downloads\SourceData\SourceData\België\mannennamen_belgie.csv",
+    GramaticaalGeslacht.Man,
+    NaamSoort.Voornaam,
+    1,
+    2,
+    0,
+    ';'
+    );
 
+ConstructorNaamTextLezerDTO voornaamV = new ConstructorNaamTextLezerDTO(
+    @"C:\Users\rowal\Downloads\SourceData\SourceData\België\vrouwennamen_belgie.csv",
+    GramaticaalGeslacht.Vrouw,
+    NaamSoort.Voornaam,
+    1,
+    2,
+    0,
+    ';'
+    );
 
-string path = @"C:\Users\rowal\Downloads\SourceData\SourceData\Finland\etunimitilasto-2025-08-13-dvv_miehet_ens.txt";
+ConstructorNaamTextLezerDTO AchterNamen = new ConstructorNaamTextLezerDTO(
+    @"C:\Users\rowal\Downloads\SourceData\SourceData\België\vrouwennamen_belgie.csv",
+    GramaticaalGeslacht.Onzijdig,
+    NaamSoort.AchterNaam,
+    1,
+    2,
+    0,
+    ';'
+    );
 
-NaamTextLezer ntl = new(path, '	', 0, 1, true, Geslacht.Man);
+InitialisationFactory factory = new InitialisationFactory("Belgie", StratenPad, [voornaamM, voornaamV, AchterNamen]);
 
-List<NaamInfo> namen = ntl.GeefAlleNamen();
+InitialisatieDC dc = factory.MaakDomeinControler();
 
-Console.WriteLine($"loaded {namen.Count} namen (press enter)");
-Console.ReadLine();
+LandDataSet data = dc.GetDataSet();
 
-for (int i = 0; i < namen.Count&&i<100; i++)
-{
-    NaamInfo s = namen[i];
-    Console.WriteLine($"naam {s.Naam}        count: {s.Frequency}");
-}
+Console.WriteLine($"dataset has {data.VoornamenV.Count} vrouwenNamen, {data.VoornamenM.Count} mannenNamen, {data.AchterNamenV.Count} achterNamenV ,, {data.AchterNamenM.Count} achterNamenM, , {data.Straten.Count} Straten");
+
 

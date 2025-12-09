@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.Domein
 {
-    internal class Simulatie
+    public class Simulatie
     {
         public DateTime TijdVanGeneratie { get; init; }
         public int DatasetID { get; init; }

@@ -1,16 +1,17 @@
 ﻿using KlantenSimulatorBL.Domein;
 using KlantenSimulatorBL.Interfaces;
+using KlantenSimulatorDatabaseInitialiserDL.interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
-namespace KlantenSimulatorDatabaseInitialiserDL
+namespace KlantenSimulatorDatabaseInitialiserDL.Lezers
 {
-    public class WegTextLezer:IWegenRepo 
+    public class WegTextLezer: IStratenLezer
     {
         private string _path {  get; set; }
 

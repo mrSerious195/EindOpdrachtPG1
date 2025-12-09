@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.Domein
 {
-    internal class LandDataSet
+    public class LandDataSet
     {
-        public Land Land;
         public List<NaamInfo> VoornamenM;
 
         public List<NaamInfo> VoornamenV;
@@ -19,9 +18,8 @@ namespace KlantenSimulatorBL.Domein
 
         public List<Straat> Straten;
 
-        public LandDataSet(Land land, List<NaamInfo> voornamenM, List<NaamInfo> voornamenV, List<NaamInfo> achterNamenM, List<NaamInfo> achterNamenV, List<Straat> straten)
+        public LandDataSet( List<NaamInfo> voornamenM, List<NaamInfo> voornamenV, List<NaamInfo> achterNamenM, List<NaamInfo> achterNamenV, List<Straat> straten)
         {
-            Land = land;
             VoornamenM = voornamenM;
             VoornamenV = voornamenV;
             AchterNamenM = achterNamenM;
