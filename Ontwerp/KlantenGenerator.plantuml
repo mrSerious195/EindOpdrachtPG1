@@ -61,12 +61,13 @@ class Simulatie{
 Simulatie x--"1..*+Klanten" Klant
 
 class DataSetManager{
- + TryGetDataSet(land : string): DataSet
- + TryGetDataSet(land : string): DataSet
+ + GetDataSet(land : string): DataSet
+ + AddDataSet(dataSet : DataSet): DataSet
 }
 
 interface IDataSetRepo{
-
++ GetDataSet(land : string): DataSet
+ + SetDataSet(land : string): DataSet
 }
 
 DataSetManager x--"1\n+DataSetRepo"IDataSetRepo

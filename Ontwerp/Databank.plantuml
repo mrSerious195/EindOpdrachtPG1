@@ -4,49 +4,79 @@ title database
 hide circle
 skinparam linetype ortho
 
-class FirstName{
-country_id: int<foreign key>
-name : varchar(30)
+
+
+class NaamData{
+dataSet_id: int<foreign key>
 id : int <key>
+naam : varchar(30)
 frequency : int
 gender: char
+NaamType: varchar(5)
 }
 
-class LastName{
-country_id: int<foreign key>
-id : int <key>
-name : varchar(30)
-frequency : int
-gender: char
-}
-
-class Country{
+class DataSet{
     id: int
-    name: varchar(30)
+    tijd_aanmaak : DateTime
+    land_id
 }
 
-class City{
-    country_id: int
+class Land{
+    id : int
+    naam: varchar(30)
+}
+DataSet "land_id"--"id" Land
+
+class Stad{
+    dataSet_id: int
     id:int
-    zipcode: varchar(20)
-    name: varchar(30)
+    naam: varchar(30)
 }
 
-class Road{
-    city_id: int
+class Straat{
+    stad_id: int
     id:int
-    zipcode: varchar(20)
-    name: varchar(30)
+    naam: varchar(30)
 }
 
-Country "id"-U-"country_id" City
+DataSet "id"-U-"dataSet_id" Stad
+DataSet "id"-U-"dataSet_id" NaamData
+class anchor{}
+hide anchor
+DataSet -- anchor
+NaamData -- anchor
+anchor -l- Stad
+Straat "stad_id" -- "id" Stad
 
-Country "id"--"country_id" FirstName
-Country "id"--"country_id" LastName
+class Simulatie{
+    id : int
+    DataSet_id : int
+    SimulatieTijd : DateTime 
+    bedrijf_id: int
+    Seed : int
+    MinimumLeeftijd : int
+    MaximumLeeftijd : int
+}
 
-Road "city_id" -- "id" City
+DataSet "id"---"dataSet_id" Simulatie
 
+class SimKlant{
+Id: int
+simulatie_id: int
+ Voornaam : varchar(30)
+ Achternaam : varchar(30)
+ GeboorteDatum : Date
+ Geslacht : char
 
+}
 
+Simulatie "id" -- "simulatie_id" SimKlant
+
+class Bedrijf{
+    id : int
+    naam : varchar(30)
+}
+
+Bedrijf "id" -- "bedrijf_id" Simulatie
 
 @enduml
