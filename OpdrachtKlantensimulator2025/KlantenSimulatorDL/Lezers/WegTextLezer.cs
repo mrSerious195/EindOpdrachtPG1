@@ -25,13 +25,15 @@ namespace KlantenSimulatorDatabaseInitialiserDL.Lezers
             _landNaam = landNaam;
         }
 
+        private string[] _validHighwayTypes = ["residential", "primary", "secondary", "pedestrian", "tertiary", "unclassified", "living_street"];
 
         public List<Straat> GeefAlleStraten()
         {
         const string unknownStad = "(unknown)";
-        const string HighwayType = "HighwayType";
+        const string HighwayType = "HighwayType"; // primary, secondary, thirtary, unclasified, residential, living street 
+        
 
-       
+
             HashSet<Straat> straten = [];
 
             Dictionary<string, Stad> stadnaamNaarStad = new();
@@ -48,7 +50,7 @@ namespace KlantenSimulatorDatabaseInitialiserDL.Lezers
                         string StadNaam = info[0];
                         string StraatNaam = info[1];
                         string Staatsoort = info[2];
-                        if (StadNaam != unknownStad && Staatsoort != HighwayType)
+                        if (StadNaam != unknownStad && _validHighwayTypes.Contains(Staatsoort))
                         {
                             Stad stad;
                             if (stadnaamNaarStad.TryGetValue(StadNaam, out stad))

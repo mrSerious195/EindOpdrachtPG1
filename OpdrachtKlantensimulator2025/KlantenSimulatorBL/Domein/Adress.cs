@@ -15,7 +15,20 @@ namespace KlantenSimulatorBL.Domein
             Straat = straat;
         }
 
-        public string HuisNr {  get; set; }
+        private string _huisnr;
+        public string HuisNr {  get=> _huisnr;
+            set {
+                if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(value.Trim()))
+                {
+                    throw new KlantenException("Adress._huisnr is null or empty");
+                }
+                else
+                {
+                    _huisnr = value;
+                }
+
+            } 
+        }
 
         private Straat straat;
         public Straat Straat { get=>straat;

@@ -15,5 +15,6 @@ namespace KlantenSimulatorBL.Managers
         {
             _repo = repo;
         }
+
     }
 }

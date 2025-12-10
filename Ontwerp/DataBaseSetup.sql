@@ -3,7 +3,7 @@ CREATE DATABASE klantenGenerator;
 USE klantenGenerator;
 CREATE TABLE land(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    naam VARCHAR(30) NOT NULL,
+    naam VARCHAR(500) NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -18,14 +18,14 @@ CREATE TABLE dataset(
 CREATE TABLE stad(
        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
      dataset_id INT UNSIGNED NOT NULL,
-    naam VARCHAR(30) NOT NULL,
+    naam VARCHAR(500) NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (dataset_id) REFERENCES dataset(id)
 );
 CREATE TABLE straat(
        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
      stad_id INT UNSIGNED NOT NULL,
-    naam VARCHAR(30) NOT NULL,
+    naam VARCHAR(500) NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (stad_id) REFERENCES stad(id)
 );
@@ -33,7 +33,7 @@ CREATE TABLE straat(
 CREATE TABLE naamdata(
        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
      dataset_id INT UNSIGNED NOT NULL,
-    naam VARCHAR(30) NOT NULL,
+    naam VARCHAR(500) NOT NULL,
     frequency INT UNSIGNED,
     gender CHAR NOT NULL,
     naam_type VARCHAR(10),
@@ -43,7 +43,7 @@ CREATE TABLE naamdata(
 
 CREATE TABLE bedrijf(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-     naam VARCHAR(30) NOT NULL,
+     naam VARCHAR(500) NOT NULL,
       PRIMARY KEY (id)
 );
 
@@ -65,8 +65,8 @@ CREATE TABLE simklant(
     simulatie_id INT UNSIGNED NOT NULL,
     geboortedatum DATE,
     geslacht ChAR,
-    voornaam VARCHAR(30),
-    achternaam VARCHAR(30),
+    voornaam VARCHAR(500),
+    achternaam VARCHAR(500),
     PRIMARY KEY (id),
     FOREIGN KEY (simulatie_id) REFERENCES simulatie(id)
 )

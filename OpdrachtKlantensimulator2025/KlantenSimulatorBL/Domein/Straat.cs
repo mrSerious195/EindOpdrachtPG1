@@ -12,14 +12,14 @@ namespace KlantenSimulatorBL.Domein
             Naam = naam;
         }
 
-        public Straat(int? id, Stad stad, string naam)
+        public Straat(uint? id, Stad stad, string naam)
         {
             Id = id;
             Stad = stad;
             Naam = naam;
         }
 
-        public int? Id {  get; set; }
+        public uint? Id {  get; set; }
 
         private Stad stad;
         public Stad Stad {  get=>stad;
@@ -42,7 +42,7 @@ namespace KlantenSimulatorBL.Domein
             get => naam;
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(value.Trim()))
                 {
                     throw new KlantenException("Straat.Naam is null or empty");
                 }

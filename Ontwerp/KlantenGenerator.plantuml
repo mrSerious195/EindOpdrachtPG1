@@ -1,4 +1,5 @@
 @startuml
+skinparam linetype ortho
 class Stad{
 Naam : string
 Id : Int?
@@ -82,14 +83,28 @@ VoegSimulatieToe(simulatie : Simulatie) : void
 
 interface ISimulatieRepo{
     + VoegSimulatieToe(simulatie Simulatie) : void
-    + GeefInfoVanAllSavedSimulaties() : SimulatieInfoDTO[]
+    + GeefInfoVanAllSavedSimulaties() : SimulatieInfoShortDTO[]
     + GeefSimulatie(Id : int?): Simulatie
-    + GeefSimulatieInfoVanLand(land : string): SimulatieInfoDTO[]
-    + GeefSimulatieInfoVanLeverancier(Leverancier : string): SimulatieInfoDTO[]
+    + GeefSimulatieInfoVanLand(land : string): SimulatieInfoShortDTO[]
+    + GeefSimulatieInfoVanLeverancier(Leverancier : string): SimulatieInfoShortDTO[]
 }
 
 Folder DTO{
- class SimulatieInfoDTO{
+ class SimulatieInfoShortDTO{
+
+ }
+ class DatasetInfoShortDTO{
+
+ }
+ class DatasetDTO{
+
+ }
+
+ class SimulatieDTO{
+
+ }
+
+ class SimulatieConfigDTO{
 
  }
 }
@@ -107,5 +122,49 @@ interface IDataSetLezer{
 
 }
 
+class LandenManager{
+
+}
+Interface ILandenRepo{
+
+}
+class BedrijfManager{
+
+}
+Interface IBedrijvenRepo{
+
+}
+LandenManager x-- "1\n-_landenRepo" ILandenRepo
+BedrijfManager x-- "1\n-_bedrijvenRepo" IBedrijvenRepo
+
+folder domeinControlers{
+class InitialisatieDC{
++InitialisatieDC(DataSetManager : DataSetManager,DataSetLezer : IDataSetLezer)
++ LeesDataSet():void
++ GeefInfoDataSet : DatasetDTO
++ AddDatasetToMemory : void
+}
+class SimulatieDC{
++ SimulatieDC(DataSetManager : DataSetManager,SimulatieManager : SimulatieManager)
++ GeefAlleLanden():string[]
++ geefAlleStedenVanLand(land string): string[]
++ GeefAllebedrijven():string[]
++ voegbedrijftoe(bedrijf : string)
++ MaakSimulatie(SimulatieConfigDTO):void
++ GeefInfoNieuweSimulatie() : SimulatieDTO
++ saveSimulatie() : void
+}
+}
+
+LandenManager "1\n-_landenManager" --x  SimulatieDC
+BedrijfManager "1\n-_bedrijfManager"  --x  SimulatieDC
+
+IDataSetLezer "1\n-_simulatieSchrijver" --X domeinControlers.InitialisatieDC
+DataSetManager "1\n-_dataSetManager" --X domeinControlers.InitialisatieDC
+
+ISimulatieSchrijver --x SimulatieManager
+
+SimulatieDC x-- "1\n-_simulatieManager" SimulatieManager
+SimulatieDC x-- "1\n-_dataSetManager" DataSetManager
 
 @enduml

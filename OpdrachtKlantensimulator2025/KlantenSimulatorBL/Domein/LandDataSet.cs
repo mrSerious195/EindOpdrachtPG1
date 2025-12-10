@@ -8,22 +8,23 @@ namespace KlantenSimulatorBL.Domein
 {
     public class LandDataSet
     {
+        uint? Id;
         public List<NaamInfo> VoornamenM;
 
         public List<NaamInfo> VoornamenV;
 
-        public List<NaamInfo> AchterNamenM;
+        public List<NaamInfo> AchternamenM;
 
-        public List<NaamInfo> AchterNamenV;
+        public List<NaamInfo> AchternamenV;
 
         public List<Straat> Straten;
 
-        public LandDataSet( List<NaamInfo> voornamenM, List<NaamInfo> voornamenV, List<NaamInfo> achterNamenM, List<NaamInfo> achterNamenV, List<Straat> straten)
+        public LandDataSet( List<NaamInfo> voornamenM, List<NaamInfo> voornamenV, List<NaamInfo> achternamenM, List<NaamInfo> achternamenV, List<Straat> straten)
         {
             VoornamenM = voornamenM;
             VoornamenV = voornamenV;
-            AchterNamenM = achterNamenM;
-            AchterNamenV = achterNamenV;
+            AchternamenM = achternamenM;
+            AchternamenV = achternamenV;
             Straten = straten;
         }
     }

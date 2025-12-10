@@ -6,6 +6,7 @@ using KlantenSimulatorDatabaseInitialiserDL;
 using KlantenSimulatorDatabaseInitialiserDL.interfaces;
 using KlantenSimulatorDatabaseInitialiserDL.Lezers;
 using KlantenSimulatorDLDatabank;
+using KlantenSimulatorDLDataSetLezers.Lezers;
 using KlantenSimulatorInitialisationUtils.DTO;
 using System;
 namespace KlantenSimulatorUtils
@@ -97,7 +98,7 @@ namespace KlantenSimulatorUtils
             }
         }
 
-       public InitialisatieDC MaakDomeinControler()
+       public Initialisatieservice MaakDomeinControler()
         {
             ILandDataSetLezer dataSetLezer;
             IStratenLezer stratenRepo = new WegTextLezer(_wegPad, _landnaam);
@@ -127,9 +128,9 @@ namespace KlantenSimulatorUtils
 
             DataSetManager dsm = new DataSetManager(new DataSetDBRepo());
 
+            InLeesDataSetManager ildsm = new InLeesDataSetManager(dataSetLezer);
 
-
-            return new InitialisatieDC(dsm, dataSetLezer);
+            return new Initialisatieservice(dsm, ildsm);
         }
 
 
@@ -137,8 +138,9 @@ namespace KlantenSimulatorUtils
         {
             if(DTO is ConstructorNaamJsonLezerDTO JsonDTO)
             {
-                throw new NotImplementedException("InitialisationFactory.DTOToNamenLezer: ConstructorNaamJsonLezerDTO isn't implemented yet");
-            }else if(DTO is ConstructorNaamTextLezerDTO TextDTO)
+                return new NaamJsonLezer(JsonDTO.Path, JsonDTO.JsonPropertyName, JsonDTO.Geslacht, JsonDTO.NaamSoort);
+            }
+            else if(DTO is ConstructorNaamTextLezerDTO TextDTO)
             {
                 return new NaamTextLezer(TextDTO.Path, TextDTO.Seperator, TextDTO.NaamColom, TextDTO.FrequencyColom, TextDTO.NaamSoort, TextDTO.Geslacht);
             }
@@ -146,6 +148,7 @@ namespace KlantenSimulatorUtils
             {
                 throw new NotImplementedException("InitialisationFactory.DTOToNamenLezer: IConstructorNaamLezerDTO is of a type not implemented");
             }
+
         }
     }
 }

@@ -9,7 +9,7 @@ skinparam linetype ortho
 class NaamData{
 dataSet_id: int<foreign key>
 id : int <key>
-naam : varchar(30)
+naam : varchar(500)
 frequency : int
 gender: char
 NaamType: varchar(5)
@@ -23,20 +23,20 @@ class DataSet{
 
 class Land{
     id : int
-    naam: varchar(30)
+    naam: varchar(500)
 }
 DataSet "land_id"--"id" Land
 
 class Stad{
     dataSet_id: int
     id:int
-    naam: varchar(30)
+    naam: varchar(500)
 }
 
 class Straat{
     stad_id: int
     id:int
-    naam: varchar(30)
+    naam: varchar(500)
 }
 
 DataSet "id"-U-"dataSet_id" Stad
@@ -63,8 +63,8 @@ DataSet "id"---"dataSet_id" Simulatie
 class SimKlant{
 Id: int
 simulatie_id: int
- Voornaam : varchar(30)
- Achternaam : varchar(30)
+ Voornaam : varchar(500)
+ Achternaam : varchar(500)
  GeboorteDatum : Date
  Geslacht : char
 
@@ -74,7 +74,7 @@ Simulatie "id" -- "simulatie_id" SimKlant
 
 class Bedrijf{
     id : int
-    naam : varchar(30)
+    naam : varchar(500)
 }
 
 Bedrijf "id" -- "bedrijf_id" Simulatie

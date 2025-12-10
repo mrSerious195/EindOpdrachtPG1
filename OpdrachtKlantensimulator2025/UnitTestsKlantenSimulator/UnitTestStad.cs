@@ -3,11 +3,11 @@ using KlantenSimulatorBL.Exceptions;
 
 namespace UnitTestsKlantenSimulator;
 
-public class UnitTestStat
+public class UnitTestStad
 {
     private Land _validLand;
 
-    public UnitTestStat()
+    public UnitTestStad()
     {
         _validLand = new Land(1, "Belguim");
     }
@@ -34,6 +34,24 @@ public class UnitTestStat
     }
 
     [Fact]
+    public void SetLandValid()
+    {
+        Stad stad = new Stad(1, _validLand, "Belguim");
+        Land land = new Land(1, "Nederland");
+        stad.Land = land;
+        Assert.Equal(land, stad.Land);
+    }
+
+    [Fact]
+    public void SetLandInvalidNull()
+    {
+        const string OriginalName = "Gent";
+        Stad stad = new Stad(1, _validLand, OriginalName);
+        Assert.Throws<KlantenException>(() => { stad.Land = null; });
+        Assert.Equal(stad.Naam, OriginalName);
+    }
+
+    [Fact]
     public void SetNaamInvalidNull()
     {
         const string OriginalName = "Gent";
@@ -51,6 +69,12 @@ public class UnitTestStat
         Stad stad = new Stad(1, _validLand, naam);
         Assert.Equal(naam, stad.Naam);
     }
+    [Fact]
+    public void ConstructorLandValid()
+    {
+        Stad stad = new Stad(1, _validLand, "Oostende");
+        Assert.Equal(_validLand, stad.Land);
+    }
 
     [Theory]
     [InlineData("")]
@@ -63,8 +87,14 @@ public class UnitTestStat
     [Fact]
     public void ConstructorNaamInvalidNull()
     {
-        const string naamnull = null;
-        Assert.Throws<KlantenException>(() => { Stad stad = new Stad(1, _validLand,naamnull); });
+        Assert.Throws<KlantenException>(() => { Stad stad = new Stad(1, _validLand, null); });
+
+    }
+
+    [Fact]
+    public void ConstructorLandInvalidNull()
+    {
+        Assert.Throws<KlantenException>(() => { Stad stad = new Stad(1, null, "Denderleeuw"); });
 
     }
 }
