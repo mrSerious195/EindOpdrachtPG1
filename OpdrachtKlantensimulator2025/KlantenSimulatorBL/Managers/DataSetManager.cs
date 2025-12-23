@@ -1,4 +1,5 @@
-﻿using KlantenSimulatorBL.Interfaces;
+﻿using KlantenSimulatorBL.Domein;
+using KlantenSimulatorBL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,21 @@ namespace KlantenSimulatorBL.Managers
 {
     public class DataSetManager
     {
-        private IDataSetRepo _repo;
+        private ILandDataSetRepo _repo;
 
-        public DataSetManager(IDataSetRepo repo)
+        public DataSetManager(ILandDataSetRepo repo)
         {
             _repo = repo;
+        }
+
+        public void SaveLandDataSet(LandDataSet landData)
+        {
+            _repo.SaveLandDataSet(landData);
+        }
+
+        public LandDataSet GetLandDataSet(int DatasetId)
+        {
+            return _repo.GetLandDataSet(DatasetId);
         }
 
     }

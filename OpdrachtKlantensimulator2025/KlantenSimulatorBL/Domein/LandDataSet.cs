@@ -8,7 +8,13 @@ namespace KlantenSimulatorBL.Domein
 {
     public class LandDataSet
     {
-        uint? Id;
+        int? Id;
+
+        public Land Land;
+
+        public string NaamDataSet;
+
+        public bool ZijnAchternamenVMHetzelfde;
         public List<NaamInfo> VoornamenM;
 
         public List<NaamInfo> VoornamenV;
@@ -19,13 +25,16 @@ namespace KlantenSimulatorBL.Domein
 
         public List<Straat> Straten;
 
-        public LandDataSet( List<NaamInfo> voornamenM, List<NaamInfo> voornamenV, List<NaamInfo> achternamenM, List<NaamInfo> achternamenV, List<Straat> straten)
+        public LandDataSet(bool zijnAchternamenVMHetzelfde,string naamDataSet,Land land, List<NaamInfo> voornamenM, List<NaamInfo> voornamenV, List<NaamInfo> achternamenM, List<NaamInfo> achternamenV, List<Straat> straten)
         {
+            ZijnAchternamenVMHetzelfde = zijnAchternamenVMHetzelfde;
+            Land =land;
             VoornamenM = voornamenM;
             VoornamenV = voornamenV;
             AchternamenM = achternamenM;
             AchternamenV = achternamenV;
             Straten = straten;
+            NaamDataSet = naamDataSet;
         }
     }
 }

@@ -15,14 +15,14 @@ namespace KlantenSimulatorBL.Domein
             this.Naam = naam;
         }
 
-        public Land(uint? id, string naam)
+        public Land(int? id, string naam)
         {
             this.Id = id;
             this.Naam = naam;
         }
 
 
-        public uint? Id { get; set; }
+        public int? Id { get; set; }
 
         private string naam;
         public string Naam {  get=> naam; 

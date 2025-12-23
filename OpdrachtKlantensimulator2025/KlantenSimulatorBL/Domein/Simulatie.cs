@@ -10,8 +10,8 @@ namespace KlantenSimulatorBL.Domein
     public class Simulatie
     {
         public DateTime TijdVanGeneratie { get; init; }
-        public uint DatasetID { get; init; }
-        public uint? id {  get; init; }
+        public int DatasetID { get; init; }
+        public int? id {  get; init; }
         public Land Land { get; init; }
 
         public int MinimumLeeftijd;
@@ -32,7 +32,7 @@ namespace KlantenSimulatorBL.Domein
         public IReadOnlyList<Klant> Klanten { get=> _klanten;}
 
       
-public Simulatie(uint datasetID, Land land, string opdrachtGever)
+public Simulatie(int datasetID, Land land, string opdrachtGever)
         {
             OpdrachtGever = opdrachtGever;
             DatasetID = datasetID;

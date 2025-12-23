@@ -9,7 +9,7 @@ namespace KlantenSimulatorBL.Domein
 {
     public class Stad
     {
-        public uint? Id;
+        public int? Id;
 
         private Land land;
 
@@ -55,7 +55,7 @@ namespace KlantenSimulatorBL.Domein
             this.Naam = naam;
         }
 
-        public Stad(uint? id, Land land, string naam)
+        public Stad(int? id, Land land, string naam)
         {
             this.Id = id;
             this.Land = land;

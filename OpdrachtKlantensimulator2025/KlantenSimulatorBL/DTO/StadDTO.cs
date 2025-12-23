@@ -2,7 +2,7 @@
 {
     public class StadDTO
     {
-        public StadDTO(string name, uint? id, string[] straten)
+        public StadDTO(string name, int? id, string[] straten)
         {
             Name = name;
             Id = id;
@@ -10,7 +10,7 @@
         }
 
         public string Name { get; set; }
-        public uint? Id {  get; set; }
+        public int? Id {  get; set; }
 
         string[] Straten { get; set; }
     }

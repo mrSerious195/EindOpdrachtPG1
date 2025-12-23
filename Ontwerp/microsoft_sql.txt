@@ -1,0 +1,94 @@
+USE master;
+GO
+
+IF DB_ID('klantenGenerator') IS NOT NULL
+BEGIN
+    DROP DATABASE klantenGenerator;
+END
+GO
+
+CREATE DATABASE klantenGenerator;
+GO
+
+USE klantenGenerator;
+GO
+
+CREATE TABLE land (
+    id INT IDENTITY(1,1) NOT NULL,
+    naam NVARCHAR(500) NOT NULL,
+    CONSTRAINT PK_land PRIMARY KEY (id)
+);
+
+CREATE TABLE dataset (
+    id INT IDENTITY(1,1) NOT NULL,
+    land_id INT NOT NULL,
+    naam NVARCHAR(500),
+    moment_aanmaak DATETIME,
+     Zijn_achternamen_neutraal BIT,
+    CONSTRAINT PK_dataset PRIMARY KEY (id),
+    CONSTRAINT FK_dataset_land
+        FOREIGN KEY (land_id) REFERENCES land(id)
+);
+
+CREATE TABLE stad (
+    id INT IDENTITY(1,1) NOT NULL,
+    dataset_id INT NOT NULL,
+    naam NVARCHAR(500) NOT NULL,
+    CONSTRAINT PK_stad PRIMARY KEY (id),
+    CONSTRAINT FK_stad_dataset
+        FOREIGN KEY (dataset_id) REFERENCES dataset(id)
+);
+
+CREATE TABLE straat (
+    id INT IDENTITY(1,1) NOT NULL,
+    stad_id INT NOT NULL,
+    naam NVARCHAR(500) NOT NULL,
+    CONSTRAINT PK_straat PRIMARY KEY (id),
+    CONSTRAINT FK_straat_stad
+        FOREIGN KEY (stad_id) REFERENCES stad(id)
+);
+
+CREATE TABLE naamdata (
+    id INT IDENTITY(1,1) NOT NULL,
+    dataset_id INT NOT NULL,
+    naam NVARCHAR(500) NOT NULL,
+    frequency INT,
+    gender CHAR(1) NOT NULL,
+    naam_type NVARCHAR(50),
+    CONSTRAINT PK_naamdata PRIMARY KEY (id),
+    CONSTRAINT FK_naamdata_dataset
+        FOREIGN KEY (dataset_id) REFERENCES dataset(id)
+);
+
+CREATE TABLE bedrijf (
+    id INT IDENTITY(1,1) NOT NULL,
+    naam NVARCHAR(500) NOT NULL,
+    CONSTRAINT PK_bedrijf PRIMARY KEY (id)
+);
+
+CREATE TABLE simulatie (
+    id INT IDENTITY(1,1) NOT NULL,
+    dataset_id INT NOT NULL,
+    bedrijf_id INT NOT NULL,
+    simulatie_tijd DATETIME,
+    seed INT,
+    minimumleeftijd DECIMAL(3,0),
+    maximumleeftijd DECIMAL(3,0),
+    CONSTRAINT PK_simulatie PRIMARY KEY (id),
+    CONSTRAINT FK_simulatie_dataset
+        FOREIGN KEY (dataset_id) REFERENCES dataset(id),
+    CONSTRAINT FK_simulatie_bedrijf
+        FOREIGN KEY (bedrijf_id) REFERENCES bedrijf(id)
+);
+
+CREATE TABLE simklant (
+    id INT IDENTITY(1,1) NOT NULL,
+    simulatie_id INT NOT NULL,
+    geboortedatum DATE,
+    geslacht CHAR(1),
+    voornaam NVARCHAR(500),
+    achternaam NVARCHAR(500),
+    CONSTRAINT PK_simklant PRIMARY KEY (id),
+    CONSTRAINT FK_simklant_simulatie
+        FOREIGN KEY (simulatie_id) REFERENCES simulatie(id)
+);

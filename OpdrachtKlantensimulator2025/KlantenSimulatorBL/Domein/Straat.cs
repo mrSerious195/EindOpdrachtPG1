@@ -12,14 +12,14 @@ namespace KlantenSimulatorBL.Domein
             Naam = naam;
         }
 
-        public Straat(uint? id, Stad stad, string naam)
+        public Straat(int? id, Stad stad, string naam)
         {
             Id = id;
             Stad = stad;
             Naam = naam;
         }
 
-        public uint? Id {  get; set; }
+        public int? Id {  get; set; }
 
         private Stad stad;
         public Stad Stad {  get=>stad;

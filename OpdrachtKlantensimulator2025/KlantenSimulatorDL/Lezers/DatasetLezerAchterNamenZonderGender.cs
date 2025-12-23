@@ -11,14 +11,15 @@ namespace KlantenSimulatorDatabaseInitialiserDL.Lezers
 {
     public class DatasetLezerAchterNamenZonderGender: ILandDataSetLezer
     {
-        public DatasetLezerAchterNamenZonderGender(IStratenLezer stratenRepo, INamenLezer namenRepoV, INamenLezer namenRepoM, INamenLezer namenRepoAchterNaam)
+        public DatasetLezerAchterNamenZonderGender(string naamDataset,IStratenLezer stratenRepo, INamenLezer namenRepoV, INamenLezer namenRepoM, INamenLezer namenRepoAchterNaam)
         {
             _stratenRepo = stratenRepo;
             _namenRepoV = namenRepoV;
             _namenRepoM = namenRepoM;
             _namenRepoAchterNaam = namenRepoAchterNaam;
+            _naamDataset = naamDataset;
         }
-
+        private string _naamDataset;
         private IStratenLezer _stratenRepo { get; init; }
 
         private INamenLezer _namenRepoV { get; init; }
@@ -32,7 +33,8 @@ namespace KlantenSimulatorDatabaseInitialiserDL.Lezers
             List<NaamInfo> voornamenM = _namenRepoM.GeefAlleNamen();
             List<NaamInfo> achternamenV = _namenRepoAchterNaam.GeefAlleNamen();
             List<NaamInfo> achternamenM = achternamenV;
-            return new LandDataSet(voornamenM, voornamenV, achternamenM, achternamenV, wegen);
+            Land land = wegen.First().Stad.Land;
+            return new LandDataSet(true,_naamDataset,land, voornamenM, voornamenV, achternamenM, achternamenV, wegen);
         }
     }
 }

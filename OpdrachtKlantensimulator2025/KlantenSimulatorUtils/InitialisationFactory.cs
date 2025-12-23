@@ -13,11 +13,14 @@ namespace KlantenSimulatorUtils
 {
     public class InitialisationFactory
     {
+        private string _naamDataset;
         private string _landnaam;
 
         private string _wegPad;
 
         private List<IConstructorNaamLezerDTO> _infoNaamRepos;
+
+        private string _databankConnectionString;
 
         /// <summary>
         /// 
@@ -29,12 +32,17 @@ namespace KlantenSimulatorUtils
         /// 4 namen = vrouwelijve Voornamen, manelijke Voornamen, vrouwelijve achternamen. manelijke achternamen
         /// </param>
         /// <exception cref="ArgumentException"></exception>
-        public InitialisationFactory(string landnaam, string straadPad, List<IConstructorNaamLezerDTO> infoNaamRepos)
+        public InitialisationFactory(string naamDataset , string landnaam, string straadPad, List<IConstructorNaamLezerDTO> infoNaamRepos,string databankConnectionString)
         {
             ArgumentException.ThrowIfNullOrEmpty(landnaam, nameof(landnaam));
             _landnaam = landnaam;
+            
+            ArgumentException.ThrowIfNullOrEmpty(databankConnectionString, nameof(databankConnectionString));
+            _databankConnectionString = databankConnectionString;
             ArgumentException.ThrowIfNullOrEmpty(straadPad, nameof(straadPad));
             _wegPad = straadPad;
+            ArgumentException.ThrowIfNullOrEmpty(naamDataset, nameof(naamDataset));
+            _naamDataset= naamDataset;
             if (infoNaamRepos != null)
             {
                 if (infoNaamRepos.Contains(null))
@@ -109,7 +117,7 @@ namespace KlantenSimulatorUtils
                         IConstructorNaamLezerDTO InfoVoornamenV = _infoNaamRepos.Where(x=> x.NaamSoort == NaamSoort.Voornaam && x.Geslacht == GramaticaalGeslacht.Vrouw).First();
                         IConstructorNaamLezerDTO InfoVoornamenM = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.Voornaam && x.Geslacht == GramaticaalGeslacht.Man).First();
                         IConstructorNaamLezerDTO InfoFamilienamen = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.AchterNaam && x.Geslacht == GramaticaalGeslacht.Onzijdig).First();
-                        dataSetLezer = new DatasetLezerAchterNamenZonderGender(stratenRepo, DTOToNamenLezer(InfoVoornamenV), DTOToNamenLezer(InfoVoornamenM), DTOToNamenLezer(InfoFamilienamen));
+                        dataSetLezer = new DatasetLezerAchterNamenZonderGender(_naamDataset,stratenRepo, DTOToNamenLezer(InfoVoornamenV), DTOToNamenLezer(InfoVoornamenM), DTOToNamenLezer(InfoFamilienamen));
                         break;
                     }
                 case 4:
@@ -119,14 +127,14 @@ namespace KlantenSimulatorUtils
                         IConstructorNaamLezerDTO InfoFamilienamenM = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.AchterNaam && x.Geslacht == GramaticaalGeslacht.Man).First();
                         IConstructorNaamLezerDTO InfoFamilienamenV = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.AchterNaam && x.Geslacht == GramaticaalGeslacht.Vrouw).First();
 
-                        dataSetLezer = new DatasetLezerAchterNamenMetGender(stratenRepo, DTOToNamenLezer(InfoVoornamenV), DTOToNamenLezer(InfoVoornamenM), DTOToNamenLezer(InfoFamilienamenV), DTOToNamenLezer(InfoFamilienamenM));
+                        dataSetLezer = new DatasetLezerAchterNamenMetGender(_naamDataset,stratenRepo, DTOToNamenLezer(InfoVoornamenV), DTOToNamenLezer(InfoVoornamenM), DTOToNamenLezer(InfoFamilienamenV), DTOToNamenLezer(InfoFamilienamenM));
                         break;
                     }
                 default: throw new Exception($"InitialisationFactory.MaakDomeinControler: doesn't accept a _infoNaamRepos with {_infoNaamRepos.Count} elements");
 
             }
 
-            DataSetManager dsm = new DataSetManager(new DataSetDBRepo());
+            DataSetManager dsm = new DataSetManager(new DataSetDBRepo(_databankConnectionString));
 
             InLeesDataSetManager ildsm = new InLeesDataSetManager(dataSetLezer);
 

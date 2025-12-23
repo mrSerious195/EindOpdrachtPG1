@@ -19,7 +19,7 @@ namespace KlantenSimulatorBL.Domein
             GeboorteDatum = geboorteDatum;
         }
 
-        public Klant(uint? id, string voorNaam, string familienaam, Adress adress, Geslacht geslacht,DateTime geboorteDatum)
+        public Klant(int? id, string voorNaam, string familienaam, Adress adress, Geslacht geslacht,DateTime geboorteDatum)
         {
             Id = id;
             VoorNaam = voorNaam;
@@ -29,7 +29,7 @@ namespace KlantenSimulatorBL.Domein
             GeboorteDatum = geboorteDatum;
         }
 
-        public uint? Id {  get; set; }
+        public int? Id {  get; set; }
 
         public string _voornaam;
         public string VoorNaam { get=> _voornaam; set

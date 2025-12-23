@@ -18,7 +18,7 @@ namespace KlantenSimulatorBL.Domein
             NaamSoort = naamsoort;
         }
 
-        public NaamInfo(uint? id, string naam, int frequency, GramaticaalGeslacht geslacht, NaamSoort naamsoort )
+        public NaamInfo(int? id, string naam, int frequency, GramaticaalGeslacht geslacht, NaamSoort naamsoort )
         {
             Id = id;
       
@@ -28,7 +28,7 @@ namespace KlantenSimulatorBL.Domein
             NaamSoort = naamsoort;  
         }
 
-        public uint? Id {  get; set; }
+        public int? Id {  get; set; }
         public string Naam { get; set; }
         public int Frequency { get; set; }
 
