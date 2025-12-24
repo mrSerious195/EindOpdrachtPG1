@@ -14,7 +14,7 @@ namespace KlantenSimulatorBL.DTO
 
         public string[] VoornamenV { get; set; }
         public string[] VoornamenM { get; set; }
-        public string[] AxchternamenV { get; set; }
-        public string[] AxchternamenM { get; set; }
+        public string[] AchternamenV { get; set; }
+        public string[] AchternamenM { get; set; }
     }
 }

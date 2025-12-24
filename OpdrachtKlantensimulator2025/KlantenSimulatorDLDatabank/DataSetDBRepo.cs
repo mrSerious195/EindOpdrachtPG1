@@ -197,14 +197,16 @@ namespace KlantenSimulatorDLDatabank
 
         public LandDataSet GetLandDataSet(int datasetId)
         {
+            LandDataSet dataset;
             const string SqlStatementLand = "select id, naam from land where id = @LandId";
             const string SqlStatementDataset = "select land_id,Zijn_achternamen_neutraal, naam from dataset where id = @datasetID";
             const string SqlStatementStad = "select id,naam from stad where dataset_id = @datasetID";
             // const string SqlStatementDataset = "Insert into dataset(land_id,naam,moment_aanmaak,Zijn_achternamen_neutraal) output INSERTED.ID values (@landId,@naam,@momentAanmaak,@achternamenNeutraal)";
-
-
+            const string SqlStatementStraat = "select str.id as id,str.stad_id as stad_id,str.naam as naam from straat str join stad st on st.id=str.stad_id where st.dataset_id = @datasetID";
+            const string SqlStatementNaam = "select id, naam,frequency,naam_type,gender from naamdata where dataset_id = @datasetID";
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
+                
                 con.Open();
                 int LandID;
                 bool ZijnAchternamenNeutraal;
@@ -245,9 +247,103 @@ namespace KlantenSimulatorDLDatabank
                     }
                     reader.Close();
                 }
-               }
+                List<Straat> straten=new();
+                using (SqlCommand sqlcmdstraat = con.CreateCommand())
+                {
+                    sqlcmdstraat.CommandText = SqlStatementStraat;
+                    sqlcmdstraat.Parameters.AddWithValue("@datasetID", datasetId);
+                    IDataReader reader = sqlcmdstraat.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Straat straat = new((int)reader["id"], IdToSteden[(int)reader["stad_id"]], (string)reader["naam"]);
+                        straten.Add(straat);
+                    }
+                    reader.Close();
+                }
 
-            return null;
+                
+
+                using (SqlCommand sqlcmdNaam = con.CreateCommand())
+                {
+                    sqlcmdNaam.CommandText = SqlStatementNaam;
+                    sqlcmdNaam.Parameters.AddWithValue("@datasetID", datasetId);
+                    IDataReader reader = sqlcmdNaam.ExecuteReader();
+                    List<NaamInfo> voornamenM = new();
+                    List<NaamInfo> voornamenV = new();
+                    if (ZijnAchternamenNeutraal)
+                    {
+                        List<NaamInfo> AchterNamen = new();
+                        while (reader.Read()) {
+                            GramaticaalGeslacht geslacht = CharToGramaticaalgeslacht(((string)reader["gender"])[0]);
+                           
+                            NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort),(string)reader["naam_type"]);
+                            List<NaamInfo> naamlijst;
+
+                            switch((geslacht, naamsoort))
+                            {
+                                case (GramaticaalGeslacht.Man, NaamSoort.Voornaam): naamlijst = voornamenM; break;
+                                case (GramaticaalGeslacht.Vrouw, NaamSoort.Voornaam): naamlijst = voornamenV; break;
+                                case (GramaticaalGeslacht.Onzijdig, NaamSoort.AchterNaam): naamlijst = AchterNamen; break;
+                                default: throw new Exception($"DatasetDBRepo.GetLandDataSet: een naam kan niet een ( {geslacht.ToString()} ,{naamsoort.ToString()} ) zijn als achternamen neutraal zijn");
+                            }
+                            NaamInfo naam = new((int)reader["id"], (string)reader["naam"], (int)reader["frequency"], geslacht, naamsoort);
+                            naamlijst.Add(naam);
+
+                        }
+
+                        dataset = new LandDataSet(ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamen, AchterNamen, straten);
+                    }
+                    else
+                    {
+                        List<NaamInfo> AchterNamenM = new();
+                        List<NaamInfo> AchterNamenV = new();
+
+                        while (reader.Read())
+                        {
+                            GramaticaalGeslacht geslacht = CharToGramaticaalgeslacht(((string)reader["gender"])[0]);
+
+                            NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort), (string)reader["naam_type"]);
+                            List<NaamInfo> naamlijst;
+
+                            switch ((geslacht, naamsoort))
+                            {
+                                case (GramaticaalGeslacht.Man, NaamSoort.Voornaam): naamlijst = voornamenM; break;
+                                case (GramaticaalGeslacht.Vrouw, NaamSoort.Voornaam): naamlijst = voornamenV; break;
+                                case (GramaticaalGeslacht.Man, NaamSoort.AchterNaam): naamlijst = AchterNamenM; break;
+                                case (GramaticaalGeslacht.Vrouw, NaamSoort.AchterNaam): naamlijst = AchterNamenV; break;
+                                default:
+                                    throw new Exception($"DatasetDBRepo.GetLandDataSet: een naam kan niet een ( {geslacht.ToString()} ,{naamsoort.ToString()} ) zijn als achternamen niet neutraal zijn");
+                            }
+                            NaamInfo naam = new((int)reader["id"], (string)reader["naam"], (int)reader["frequency"], geslacht, naamsoort);
+                            naamlijst.Add(naam);
+
+                        }
+                        dataset = new LandDataSet(ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamenM, AchterNamenV, straten);
+
+                    }
+                    reader.Close();
+                }
+
+
+            }
+
+            return dataset;
         }
+
+
+
+        private GramaticaalGeslacht CharToGramaticaalgeslacht(char geslachtaschar)
+        {
+            switch (geslachtaschar)
+            {
+                case 'M': return GramaticaalGeslacht.Man;
+                case 'V': return GramaticaalGeslacht.Vrouw;
+                case 'O': return GramaticaalGeslacht.Onzijdig;
+                default: throw new Exception($"DatasetDBRepo.Chartogramaticaalgeslacht \'{geslachtaschar}\' is niet geimplementeerd");
+            }
+        }
+
+
+
     }
 }

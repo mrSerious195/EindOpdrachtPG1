@@ -37,8 +37,8 @@ namespace KlantenSimulatorBL.Managers
                 Land = LandDataSet.Straten[0].Stad.Land.Naam,
                 VoornamenV = LandDataSet.VoornamenV.Select(v => v.Naam).ToArray(),
                 VoornamenM = LandDataSet.VoornamenM.Select(m => m.Naam).ToArray(),
-                AxchternamenV = LandDataSet.AchternamenV.Select(v => v.Naam).ToArray(),
-                AxchternamenM = LandDataSet.AchternamenM.Select(m => m.Naam).ToArray(),
+                AchternamenV = LandDataSet.AchternamenV.Select(v => v.Naam).ToArray(),
+                AchternamenM = LandDataSet.AchternamenM.Select(m => m.Naam).ToArray(),
                 StadDTOs = LandDataSet.Straten
                 .GroupBy(straat => straat.Stad)
                 .Select(group => new StadDTO(group.Key.Naam, group.Key.Id, group.Select(straat => straat.Naam).ToArray())).ToArray()

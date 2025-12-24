@@ -68,8 +68,10 @@ Initialisatieservice inService = factory.MaakDomeinControler();
 
 LandDataSetDTO data = inService.GeefDataSetDTO();
 
-Console.WriteLine($"dataset has {data.VoornamenV.Count()} vrouwenNamen, {data.VoornamenM.Count()} mannenNamen, {data.AxchternamenV.Count()} achterNamenV ,, {data.AxchternamenM.Count()} achterNamenM, , {data.StadDTOs.Count()} Steden");
+Console.WriteLine($"dataset has {data.VoornamenV.Count()} vrouwenNamen, {data.VoornamenM.Count()} mannenNamen, {data.AchternamenV.Count()} achterNamenV ,, {data.AchternamenM.Count()} achterNamenM, , {data.StadDTOs.Count()} Steden");
 //inService.SaveDataSet();
 
-inService.testrepo();
+LandDataSet dataset =  inService.testrepo();
+Console.WriteLine($"dataset has {dataset.VoornamenV.Count()} vrouwenNamen, {dataset.VoornamenM.Count()} mannenNamen, {dataset.AchternamenV.Count()} achterNamenV ,, {dataset.AchternamenM.Count()} achterNamenM, , {data.StadDTOs.Count()} Steden");
+
 
