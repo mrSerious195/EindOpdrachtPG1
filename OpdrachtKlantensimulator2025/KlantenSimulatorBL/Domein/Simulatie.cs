@@ -11,15 +11,20 @@ namespace KlantenSimulatorBL.Domein
     {
         public DateTime TijdVanGeneratie { get; init; }
         public int DatasetID { get; init; }
-        public int? id {  get; init; }
+        public int? id { get; init; }
         public Land Land { get; init; }
 
         public int MinimumLeeftijd;
         public int MaximumLeeftijd;
-        public int TootaalAantalKlanten;
-        public bool KunnenAdressenNummersHebben;
+        public float PercentageAdressenMetNummers;
+        public List<Stad> LimitatieTotSteden;
+        public int AantalMogelijkeLettersInHuisNr;
+        public int MaxHuisnummer;
+        public string OpdrachtGever;
+        private List<Klant> _klanten;
+        public IReadOnlyList<Klant> Klanten { get => _klanten; }
         // Aantal Straten Per Gemeente ???
-        public String OpdrachtGever;
+        public int TootaalAantalKlanten;
         public Klant JongsteKlant;
         public Klant OudsteKlant;
         public float GemiddeldeLeeftijdKlantOpGeneratie;
@@ -27,19 +32,25 @@ namespace KlantenSimulatorBL.Domein
 
 
         public Dictionary<Stad, int> _aantalKlantenPerStad;
-        public IReadOnlyDictionary<Stad, int> AantalKlantenPerStad { get=> _aantalKlantenPerStad; }
-
-        private List<Klant> _klanten;
-        public IReadOnlyList<Klant> Klanten { get=> _klanten;}
-
-      
-public Simulatie(int datasetID, Land land, string opdrachtGever)
+        public IReadOnlyDictionary<Stad, int> AantalKlantenPerStad { get => _aantalKlantenPerStad; }
+        public Simulatie(DateTime tijdVanGeneratie, int datasetID, int? id, Land land, int minimumLeeftijd, int maximumLeeftijd, float percentageAdressenMetNummers, List<Stad> limitatieTotSteden, int aantalMogelijkeLettersInHuisNr, int maxHuisnummer, string opdrachtGever, List<Klant> klanten)
         {
-            OpdrachtGever = opdrachtGever;
+            TijdVanGeneratie = tijdVanGeneratie;
             DatasetID = datasetID;
+            this.id = id;
             Land = land;
-            _klanten = new();
-            _aantalKlantenPerStad = new();
+            MinimumLeeftijd = minimumLeeftijd;
+            MaximumLeeftijd = maximumLeeftijd;
+            PercentageAdressenMetNummers = percentageAdressenMetNummers;
+            LimitatieTotSteden = limitatieTotSteden;
+            AantalMogelijkeLettersInHuisNr = aantalMogelijkeLettersInHuisNr;
+            MaxHuisnummer = maxHuisnummer;
+            OpdrachtGever = opdrachtGever;
+            _klanten = klanten;
         }
+
+
     }
+      
+
 }

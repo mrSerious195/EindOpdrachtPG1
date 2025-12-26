@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.Generator
 {
-    internal class KlantenGenerator
+    public class KlantenGenerator
     {
         private int _minimumleeftijd;
         private int _maximumleeftijd;
@@ -105,7 +105,7 @@ namespace KlantenSimulatorBL.Generator
                     default: throw new Exception($"KlantenGenerator.GenereerKlanten: geslacht {geslacht} is onbekend");
                 }
 
-                DateTime geboorteDatum = DateTime.Today.AddYears(_minimumleeftijd + Random.Shared.Next(leeftijdDiff)).AddDays(-Random.Shared.Next(365));
+                DateTime geboorteDatum = DateTime.Today.AddYears(-_maximumleeftijd + Random.Shared.Next(leeftijdDiff)).AddDays(-Random.Shared.Next(365));
                 Adress adress = _adressenGenerator.GenereerEenNieuwAdress();
 
                 klanten.Add(new Klant(voornaam, achternaam, adress, geslacht, geboorteDatum));

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.DTO
 {
-    internal class SimulatieSetupDataDTO
+    public class SimulatieSetupDataDTO
     {
         public int LandDataSetID;
         public int MinimumLeeftijd;
@@ -15,10 +15,23 @@ namespace KlantenSimulatorBL.DTO
         public int AantalMogelijkeLettersInHuisNr;
         public int TootaalAantalKlanten;
         public float KansVoorHuisNrMetLetter;
+        public string Opdrachtgever;
         /// <summary>
         /// als deze leeg zou zijn worden de <TootaalAantalKlanten> verdeeld at random.
         /// </summary>
-        public HashSet<int>? GelimiteerdTotStedenStadIDs; 
+        public HashSet<int>? GelimiteerdTotStedenStadIDs;
 
+        public SimulatieSetupDataDTO(int landDataSetID, int minimumLeeftijd, int maximumLeeftijd, int maximumHuisNr, int aantalMogelijkeLettersInHuisNr, int tootaalAantalKlanten, float kansVoorHuisNrMetLetter, string opdrachtgever, HashSet<int>? gelimiteerdTotStedenStadIDs)
+        {
+            LandDataSetID = landDataSetID;
+            MinimumLeeftijd = minimumLeeftijd;
+            MaximumLeeftijd = maximumLeeftijd;
+            MaximumHuisNr = maximumHuisNr;
+            AantalMogelijkeLettersInHuisNr = aantalMogelijkeLettersInHuisNr;
+            TootaalAantalKlanten = tootaalAantalKlanten;
+            KansVoorHuisNrMetLetter = kansVoorHuisNrMetLetter;
+            Opdrachtgever = opdrachtgever;
+            GelimiteerdTotStedenStadIDs = gelimiteerdTotStedenStadIDs;
+        }
     }
 }

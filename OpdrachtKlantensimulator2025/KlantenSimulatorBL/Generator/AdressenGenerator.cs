@@ -15,7 +15,7 @@ namespace KlantenSimulatorBL.Generator
         private int _maxHuisnummer;
         private bool _zijnErLetterInHuisNr;
         private float _kansOpEenLetterInHuisNr;
-        private int _aantalMogelijkeLettersInHuisNr = 5;
+        private int _aantalMogelijkeLettersInHuisNr;
         /// <summary>
         /// 
         /// </summary>
@@ -62,6 +62,7 @@ namespace KlantenSimulatorBL.Generator
                     isEenApartement = Random.Shared.NextDouble() < _kansOpEenLetterInHuisNr;
                     IsHuisEenAppartement.Add((straat, huisNrAlsInt), isEenApartement);
                 }
+
                 if (isEenApartement)
                 {
                     char appartementChar = (char)('A' + Random.Shared.Next(_aantalMogelijkeLettersInHuisNr));

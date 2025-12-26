@@ -68,7 +68,7 @@ namespace KlantenSimulatorBL.Domein
             get => _adress;
             set
             {
-                if (_adress == null)
+                if (value == null)
                 {
                     throw new KlantenException("Klant.Adress is null");
                 }
@@ -91,7 +91,7 @@ namespace KlantenSimulatorBL.Domein
                 }
                 else if(value>DateTime.Now)
                 {
-                    throw new KlantenException("Klant.GeboorteDatum is in de toekomst");
+                    throw new KlantenException($"Klant.GeboorteDatum: {value.ToString()}  is in de toekomst");
                 }
                 else
                 {

@@ -233,7 +233,7 @@ namespace KlantenSimulatorDLDatabank
                     land = new((int)reader["id"], (string)reader["naam"]);
                     reader.Close();
                 }
-                Console.WriteLine($"{land.Id}, {land.Naam}");
+               
                 Dictionary<int, Stad> IdToSteden = new();
                 using (SqlCommand sqlcmdstad = con.CreateCommand())
                 {
@@ -291,7 +291,7 @@ namespace KlantenSimulatorDLDatabank
 
                         }
 
-                        dataset = new LandDataSet(ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamen, AchterNamen, straten);
+                        dataset = new LandDataSet(datasetId, ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamen, AchterNamen, straten);
                     }
                     else
                     {
@@ -318,7 +318,7 @@ namespace KlantenSimulatorDLDatabank
                             naamlijst.Add(naam);
 
                         }
-                        dataset = new LandDataSet(ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamenM, AchterNamenV, straten);
+                        dataset = new LandDataSet(datasetId, ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamenM, AchterNamenV, straten);
 
                     }
                     reader.Close();
