@@ -134,7 +134,7 @@ namespace KlantenSimulatorUtils
 
             }
 
-            DataSetManager dsm = new DataSetManager(new DataSetDBRepo(_databankConnectionString));
+            LandDataSetManager dsm = new LandDataSetManager(new DataSetDBRepo(_databankConnectionString));
 
             InLeesDataSetManager ildsm = new InLeesDataSetManager(dataSetLezer);
 

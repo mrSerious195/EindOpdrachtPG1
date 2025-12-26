@@ -13,10 +13,10 @@ namespace KlantenSimulatorBL.DomeinControlers
 {
     public class Initialisatieservice
     {
-        private DataSetManager _dataSetManager;
+        private LandDataSetManager _dataSetManager;
         private InLeesDataSetManager _inLeesDataSetManager;
 
-        public Initialisatieservice(DataSetManager dataSetManager, InLeesDataSetManager inLeesDataSetManager)
+        public Initialisatieservice(LandDataSetManager dataSetManager, InLeesDataSetManager inLeesDataSetManager)
         {
             _dataSetManager = dataSetManager;
             _inLeesDataSetManager = inLeesDataSetManager;

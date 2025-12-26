@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.Managers
 {
-    public class DataSetManager
+    public class LandDataSetManager
     {
         private ILandDataSetRepo _repo;
 
-        public DataSetManager(ILandDataSetRepo repo)
+        public LandDataSetManager(ILandDataSetRepo repo)
         {
             _repo = repo;
         }

@@ -17,6 +17,7 @@ namespace KlantenSimulatorBL.Domein
         public int MinimumLeeftijd;
         public int MaximumLeeftijd;
         public int TootaalAantalKlanten;
+        public bool KunnenAdressenNummersHebben;
         // Aantal Straten Per Gemeente ???
         public String OpdrachtGever;
         public Klant JongsteKlant;

@@ -30,8 +30,8 @@ namespace KlantenSimulatorBL.Domein
             } 
         }
 
-        private Straat straat;
-        public Straat Straat { get=>straat;
+        private Straat _straat;
+        public Straat Straat { get=>_straat;
             set
             {
                 if (value == null)
@@ -40,12 +40,22 @@ namespace KlantenSimulatorBL.Domein
                 }
                 else
                 {
-                    straat = value;
+                    _straat = value;
                 }
             }
                 
                 }
 
+        public override bool Equals(object? obj)
+        {
+            return obj is Adress adress &&
+                   _huisnr == adress._huisnr &&
+                   EqualityComparer<Straat>.Default.Equals(_straat, adress._straat);
+        }
 
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_huisnr, _straat);
+        }
     }
 }
