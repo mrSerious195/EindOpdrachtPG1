@@ -10,6 +10,7 @@ namespace KlantenSimulatorBL.Generator
 {
     public class KlantenGenerator
     {
+        private Random _rand;
         private int _minimumleeftijd;
         private int _maximumleeftijd;
 
@@ -24,8 +25,9 @@ namespace KlantenSimulatorBL.Generator
   
 
         private AdressenGenerator _adressenGenerator;
-        public KlantenGenerator(AdressenGenerator adressenGenerator, int minimumleeftijd, int maximumleeftijd, List<NaamInfo> voornamenV, List<NaamInfo> voornamenM, List<NaamInfo> achternamenV, List<NaamInfo> achternamenM)
+        public KlantenGenerator(AdressenGenerator adressenGenerator, int minimumleeftijd, int maximumleeftijd, List<NaamInfo> voornamenV, List<NaamInfo> voornamenM, List<NaamInfo> achternamenV, List<NaamInfo> achternamenM,Random rand)
         {
+            _rand = rand;
             _minimumleeftijd = minimumleeftijd;
             _maximumleeftijd = maximumleeftijd;
             _voornamenVBinaryList = NaamInfoListToBinaryTable(voornamenV, out _sumFrequencyVoornamenV);
@@ -50,26 +52,37 @@ namespace KlantenSimulatorBL.Generator
 
         private NaamInfo GeefRandomNaam(List<(NaamInfo, int)> naamBinaryList,int sumFrequancy)
         {
-            int lowerBound = 0;
-            int upperBound = sumFrequancy;
+           
             int lowerIndex = 0;
-            int upperIndex = naamBinaryList.Count;
-            int lookForSumF = Random.Shared.Next(sumFrequancy)+1;
-            int currentIndex = naamBinaryList.Count / 2;
+            int upperIndex = naamBinaryList.Count-1;
+            int lookForSumF = _rand.Next(sumFrequancy)+1;
+            int currentIndex = (upperIndex + lowerIndex) / 2;
             int currentSumF = naamBinaryList[currentIndex].Item2;
 
-            // zoeken waar het random getal zich bevind met binary search
+            // zoeken waar het random getal zich bevind met binary search (als het tussen 2 getallen zit, nemen we het paar met de grootste int)
             while(lowerIndex != upperIndex)
             {
                 if(lookForSumF> currentSumF)
                 {
                     lowerIndex = currentIndex;
-                    lowerBound = currentSumF;
+                   
                 }
                 else if(lookForSumF < currentSumF)
                 {
                     upperIndex = currentIndex;
-                    upperBound = currentSumF;
+                    if (currentIndex - 1 >= 0)
+                    {
+                        (NaamInfo, int) lesserpair = naamBinaryList[currentIndex - 1];
+                        if (lookForSumF > lesserpair.Item2)
+                        {
+                            return naamBinaryList[currentIndex].Item1;
+                        }
+                    }
+                    else
+                    {
+                        return naamBinaryList[0].Item1;
+                    }
+                   
                 }
                 else
                 {
@@ -91,7 +104,7 @@ namespace KlantenSimulatorBL.Generator
             Geslacht[] alleGeslachten = (Geslacht[]) Enum.GetValues(typeof(Geslacht));
             int leeftijdDiff = _maximumleeftijd - _minimumleeftijd;
             for (int i = 0; i < hoeveelKlanten; i++) {
-                Geslacht geslacht= alleGeslachten[Random.Shared.Next(alleGeslachten.Length)];
+                Geslacht geslacht= alleGeslachten[_rand.Next(alleGeslachten.Length)];
                 string voornaam, achternaam;
                 switch(geslacht){
                     case Geslacht.Man:
@@ -104,8 +117,9 @@ namespace KlantenSimulatorBL.Generator
                         break;
                     default: throw new Exception($"KlantenGenerator.GenereerKlanten: geslacht {geslacht} is onbekend");
                 }
+             
 
-                DateTime geboorteDatum = DateTime.Today.AddYears(-_maximumleeftijd + Random.Shared.Next(leeftijdDiff)).AddDays(-Random.Shared.Next(365));
+                DateTime geboorteDatum = DateTime.Today.AddYears(-(_minimumleeftijd + _rand.Next(leeftijdDiff))).AddDays(-_rand.Next(365));
                 Adress adress = _adressenGenerator.GenereerEenNieuwAdress();
 
                 klanten.Add(new Klant(voornaam, achternaam, adress, geslacht, geboorteDatum));

@@ -10,6 +10,7 @@ namespace KlantenSimulatorBL.Generator
 {
     public class AdressenGenerator : IAdressenGenerator
     {
+        private Random _rand;
         private List<Straat> _straten;
         private Dictionary<(Straat, int), bool> IsHuisEenAppartement;
         private int _maxHuisnummer;
@@ -22,9 +23,9 @@ namespace KlantenSimulatorBL.Generator
         /// <param name="kansOpEenLetterInHuisNr"> 0 betekend geen letters in de huisNrs, 1 betekent dat er overal een letter in een huisnr zit</param>
         /// <param name="maxHuisnummer"></param>
         ///  <param name="aantalMogelijkeLettersInHuisNr">1 = A | 2 = A,B | 3 =A,B,C ...</param>
-        public AdressenGenerator(List<Straat> straten, float kansOpEenLetterInHuisNr, int maxHuisnummer, int aantalMogelijkeLettersInHuisNr)
+        public AdressenGenerator(List<Straat> straten, float kansOpEenLetterInHuisNr, int maxHuisnummer, int aantalMogelijkeLettersInHuisNr,Random rand)
         {
-
+            _rand = rand;
             _straten = straten;
             _maxHuisnummer = maxHuisnummer;
             if (kansOpEenLetterInHuisNr > 0)
@@ -47,9 +48,9 @@ namespace KlantenSimulatorBL.Generator
         {
 
            
-            Straat straat = _straten[Random.Shared.Next(_straten.Count)];
+            Straat straat = _straten[_rand.Next(_straten.Count)];
 
-            int huisNrAlsInt = Random.Shared.Next(_maxHuisnummer) + 1;
+            int huisNrAlsInt = _rand.Next(_maxHuisnummer) + 1;
             Adress adress;
             if (_zijnErLetterInHuisNr)
             {
@@ -59,13 +60,13 @@ namespace KlantenSimulatorBL.Generator
                 }
                 else
                 {
-                    isEenApartement = Random.Shared.NextDouble() < _kansOpEenLetterInHuisNr;
+                    isEenApartement = _rand.NextDouble() < _kansOpEenLetterInHuisNr;
                     IsHuisEenAppartement.Add((straat, huisNrAlsInt), isEenApartement);
                 }
 
                 if (isEenApartement)
                 {
-                    char appartementChar = (char)('A' + Random.Shared.Next(_aantalMogelijkeLettersInHuisNr));
+                    char appartementChar = (char)('A' + _rand.Next(_aantalMogelijkeLettersInHuisNr));
                     string huisnr = $"{huisNrAlsInt}{appartementChar}";
                     adress = new(huisnr, straat);
                 }

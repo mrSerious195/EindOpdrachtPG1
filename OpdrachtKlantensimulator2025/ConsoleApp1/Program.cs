@@ -11,7 +11,9 @@ using System;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-/*string StratenPad = @"C:\Users\rowal\Downloads\SourceData\SourceData\België\belgium_streets2.csv";
+string databankpad = @"Data Source=ROWALD\SQLEXPRESS; Initial Catalog = klantenGenerator; Integrated Security = True; Connect Timeout = 30; Encrypt = True; Trust Server Certificate=True; Application Intent = ReadWrite; Multi Subnet Failover=False";
+
+string StratenPad = @"C:\Users\rowal\Downloads\SourceData\SourceData\België\belgium_streets2.csv";
 
 ConstructorNaamTextLezerDTO voornaamM = new ConstructorNaamTextLezerDTO(
     @"C:\Users\rowal\Downloads\SourceData\SourceData\België\mannennamen_belgie.csv",
@@ -41,7 +43,7 @@ ConstructorNaamTextLezerDTO AchterNamen = new ConstructorNaamTextLezerDTO(
     2,
     0,
     ';'
-    );*/
+    );/*
 
 string StratenPad = @"C:\Users\rowal\Downloads\SourceData\SourceData\Polen\poland_streets2.csv";
 string databankpad = @"Data Source=ROWALD\SQLEXPRESS; Initial Catalog = klantenGenerator; Integrated Security = True; Connect Timeout = 30; Encrypt = True; Trust Server Certificate=True; Application Intent = ReadWrite; Multi Subnet Failover=False";
@@ -60,9 +62,9 @@ ConstructorNaamJsonLezerDTO AchterNamen = new ConstructorNaamJsonLezerDTO(@"C:\U
     GramaticaalGeslacht.Onzijdig,
     NaamSoort.AchterNaam,
     "name.last_name"
-    );
+    );*/
 
-InitialisationFactory factory = new InitialisationFactory("Belgie 2025","Belgie", StratenPad, [voornaamM, voornaamV, AchterNamen], databankpad);
+InitialisationFactory factory = new InitialisationFactory("Belgie (niet polen)","Belgie", StratenPad, [voornaamM, voornaamV, AchterNamen], databankpad);
 
 Initialisatieservice inService = factory.MaakDomeinControler();
 inService.SaveDataSet();

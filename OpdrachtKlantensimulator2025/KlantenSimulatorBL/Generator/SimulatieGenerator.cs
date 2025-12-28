@@ -50,9 +50,9 @@ namespace KlantenSimulatorBL.Generator
                 }
 
             }
-                AdressenGenerator adressenGenerator = new(straten,dataVoorSimulatie.KansVoorHuisNrMetLetter, dataVoorSimulatie.MaximumHuisNr, dataVoorSimulatie.AantalMogelijkeLettersInHuisNr);
+                AdressenGenerator adressenGenerator = new(straten,dataVoorSimulatie.KansVoorHuisNrMetLetter, dataVoorSimulatie.MaximumHuisNr, dataVoorSimulatie.AantalMogelijkeLettersInHuisNr, random);
 
-            KlantenGenerator klantenGenerator = new(adressenGenerator, dataVoorSimulatie.MinimumLeeftijd, dataVoorSimulatie.MinimumLeeftijd, landData.VoornamenV, landData.VoornamenM, landData.AchternamenV, landData.AchternamenM);
+            KlantenGenerator klantenGenerator = new(adressenGenerator, dataVoorSimulatie.MinimumLeeftijd, dataVoorSimulatie.MaximumLeeftijd, landData.VoornamenV, landData.VoornamenM, landData.AchternamenV, landData.AchternamenM, random);
 
             List<Klant> klanten = klantenGenerator.GenereerKlanten(dataVoorSimulatie.TootaalAantalKlanten);
             Simulatie simulatie = new(seed,landData.Id.Value, landData.Land, dataVoorSimulatie.MinimumLeeftijd, dataVoorSimulatie.MaximumLeeftijd, dataVoorSimulatie.KansVoorHuisNrMetLetter, stedenlimitatie.ToList(), dataVoorSimulatie.AantalMogelijkeLettersInHuisNr, dataVoorSimulatie.MaximumHuisNr, dataVoorSimulatie.Opdrachtgever, klanten);
