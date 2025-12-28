@@ -28,9 +28,9 @@ namespace KlantenSimulatorBL.DomeinControlers
            return _inLeesDataSetManager.geefDataSetAlsDTO();
         }
 
-        public LandDataSet testrepo()
+        public LandDataSet testrepo(int id)
         {
-            return _dataSetManager.GetLandDataSet(1);
+            return _dataSetManager.GetLandDataSet(id);
         }
 
         public void SaveDataSet()

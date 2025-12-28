@@ -13,18 +13,21 @@ namespace KlantenSimulatorBL.Services
     public class SimulatieService
     {
       //  private LandDataSetManager landDataSetManager;
-       // private SimulatieManager simulatieManager;
+        private SimulatieManager _simulatieManager;
         private SimulatieGenerator _simulatieGenerator;
 
 
-        public SimulatieService(SimulatieGenerator simulatieGenerator)
+        public SimulatieService(SimulatieGenerator simulatieGenerator, SimulatieManager simulatieManager)
         {
             _simulatieGenerator = simulatieGenerator;
+            _simulatieManager = simulatieManager;
         }
 
         public Simulatie genereerSimulatie(SimulatieSetupDataDTO data)
         {
-            return _simulatieGenerator.generateSimulatie(data);
+            Simulatie sim = _simulatieGenerator.generateSimulatie(data);
+            _simulatieManager.SaveSimulatie(sim);
+            return sim;
         }
 
 

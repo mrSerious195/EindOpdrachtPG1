@@ -9,10 +9,12 @@ namespace KlantenSimulatorSimUtils
     {
         public static SimulatieService geefServise(string DatabankConectionString)
         {
-            DataSetDBRepo repo = new(DatabankConectionString);
-            LandDataSetManager landDataSetManager = new(repo);
+            LandDataSetDBRepo Landrepo = new(DatabankConectionString);
+            KlantenSimulatieDBRepo simrepo = new(DatabankConectionString);
+            LandDataSetManager landDataSetManager = new(Landrepo);
+            SimulatieManager simulatieManager = new(simrepo);
             SimulatieGenerator gen = new SimulatieGenerator(landDataSetManager);
-            SimulatieService service = new(gen);
+            SimulatieService service = new(gen, simulatieManager);
             return service;
 
         }

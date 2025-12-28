@@ -65,13 +65,13 @@ ConstructorNaamJsonLezerDTO AchterNamen = new ConstructorNaamJsonLezerDTO(@"C:\U
 InitialisationFactory factory = new InitialisationFactory("Belgie 2025","Belgie", StratenPad, [voornaamM, voornaamV, AchterNamen], databankpad);
 
 Initialisatieservice inService = factory.MaakDomeinControler();
+inService.SaveDataSet();
+//LandDataSetDTO data = inService.GeefDataSetDTO();
 
-LandDataSetDTO data = inService.GeefDataSetDTO();
-
-Console.WriteLine($"dataset has {data.VoornamenV.Count()} vrouwenNamen, {data.VoornamenM.Count()} mannenNamen, {data.AchternamenV.Count()} achterNamenV ,, {data.AchternamenM.Count()} achterNamenM, , {data.StadDTOs.Count()} Steden");
+//Console.WriteLine($"dataset has {data.VoornamenV.Count()} vrouwenNamen, {data.VoornamenM.Count()} mannenNamen, {data.AchternamenV.Count()} achterNamenV ,, {data.AchternamenM.Count()} achterNamenM, , {data.StadDTOs.Count()} Steden");
 //inService.SaveDataSet();
 
-LandDataSet dataset =  inService.testrepo();
-Console.WriteLine($"dataset has {dataset.VoornamenV.Count()} vrouwenNamen, {dataset.VoornamenM.Count()} mannenNamen, {dataset.AchternamenV.Count()} achterNamenV ,, {dataset.AchternamenM.Count()} achterNamenM, , {data.StadDTOs.Count()} Steden");
+LandDataSet dataset =  inService.testrepo(1);
+Console.WriteLine($"dataset has {dataset.VoornamenV.Count()} vrouwenNamen, {dataset.VoornamenM.Count()} mannenNamen, {dataset.AchternamenV.Count()} achterNamenV ,, {dataset.AchternamenM.Count()} achterNamenM, {dataset.Straten.Count()} straten ");
 
 

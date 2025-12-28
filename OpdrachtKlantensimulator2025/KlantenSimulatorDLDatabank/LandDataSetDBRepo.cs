@@ -7,20 +7,20 @@ using System.Data;
 
 namespace KlantenSimulatorDLDatabank
 {
-    public class DataSetDBRepo : ILandDataSetRepo
+    public class LandDataSetDBRepo : ILandDataSetRepo
     {
         private string _connectionString;
-        public DataSetDBRepo(string connectionstring)
+        public LandDataSetDBRepo(string connectionstring)
         {
             _connectionString = connectionstring;
         }
 
         public void SaveLandDataSet(LandDataSet landData)
         {
-            const string SqlStatementHasLand = "select id from Land where naam like (@voorwaarde)";
-            const string SqlStatementLand = "Insert into Land(naam) output INSERTED.ID values (@naam)";
-            const string SqlStatementDataset = "Insert into dataset(land_id,naam,moment_aanmaak,Zijn_achternamen_neutraal) output INSERTED.ID values (@landId,@naam,@momentAanmaak,@achternamenNeutraal)";
-           
+            const string sqlStatementHasLand = "select id from Landen where naam like (@voorwaarde)";
+            const string sqlStatementLand = "Insert into Landen(naam) output INSERTED.ID values (@naam)";
+            const string sqlStatementDataset = "Insert into land_datasets(land_id,naam,moment_aanmaak,Zijn_achternamen_neutraal) output INSERTED.ID values (@landId,@naam,@momentAanmaak,@achternamenNeutraal)";
+            const string sqlStatementLookupCityID = "select id, naam from steden where dataset_id = @datasetid ";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -36,8 +36,8 @@ namespace KlantenSimulatorDLDatabank
                             cmdLand.Transaction = transaction;
                             cmdHasLand.Transaction = transaction;
 
-                            cmdHasLand.CommandText = SqlStatementHasLand;
-                            cmdLand.CommandText = SqlStatementLand;
+                            cmdHasLand.CommandText = sqlStatementHasLand;
+                            cmdLand.CommandText = sqlStatementLand;
 
                             string landNaam = landData.Land.Naam;
                             cmdHasLand.Parameters.AddWithValue("@voorwaarde", landNaam);
@@ -65,7 +65,7 @@ namespace KlantenSimulatorDLDatabank
                     using (SqlCommand cmdDataset = con.CreateCommand())
                     {
                         cmdDataset.Transaction = transaction;
-                    cmdDataset.CommandText = SqlStatementDataset;
+                    cmdDataset.CommandText = sqlStatementDataset;
                     cmdDataset.Parameters.AddWithValue("@landId", landID);
                     cmdDataset.Parameters.AddWithValue("@naam", landData.NaamDataSet);
                     cmdDataset.Parameters.AddWithValue("@achternamenNeutraal", landData.ZijnAchternamenVMHetzelfde);
@@ -76,7 +76,7 @@ namespace KlantenSimulatorDLDatabank
                 using (SqlBulkCopy bulkNamen = new SqlBulkCopy(con, SqlBulkCopyOptions.Default, transaction))
                 {
 
-                    DataTable NaamTabel = new DataTable("naamdata");
+                    DataTable NaamTabel = new DataTable("namen");
                     NaamTabel.Columns.Add("dataset_id", typeof(int));
                     NaamTabel.Columns.Add("naam", typeof(string));
                     NaamTabel.Columns.Add("frequency", typeof(int));
@@ -113,7 +113,7 @@ namespace KlantenSimulatorDLDatabank
                     bulkNamen.ColumnMappings.Add("frequency", "frequency");
                     bulkNamen.ColumnMappings.Add("naam_type", "naam_type");
                     bulkNamen.ColumnMappings.Add("gender", "gender");
-                    bulkNamen.DestinationTableName = "naamdata";
+                    bulkNamen.DestinationTableName = "namen";
                     bulkNamen.WriteToServer(NaamTabel);
                 }
 
@@ -121,7 +121,7 @@ namespace KlantenSimulatorDLDatabank
                 using (SqlBulkCopy bulkSteden = new SqlBulkCopy(con, SqlBulkCopyOptions.Default, transaction))
                 {
 
-                    DataTable stadTabel = new DataTable("stad");
+                    DataTable stadTabel = new DataTable("steden");
                     stadTabel.Columns.Add("dataset_id", typeof(int));
                     stadTabel.Columns.Add("naam", typeof(string));
                     HashSet<string> steden = new();
@@ -137,11 +137,11 @@ namespace KlantenSimulatorDLDatabank
                     }
                     bulkSteden.ColumnMappings.Add("dataset_id", "dataset_id");
                     bulkSteden.ColumnMappings.Add("naam", "naam");
-                    bulkSteden.DestinationTableName = "stad";
+                    bulkSteden.DestinationTableName = "steden";
                     bulkSteden.WriteToServer(stadTabel);
                 }
 
-                const string sqlStatementLookupCityID = "select id, naam from stad where dataset_id = @datasetid ";
+             
                 Dictionary<string, int> StadToId = new();
                 using(SqlCommand cmdLookupCityID = con.CreateCommand())
                 {
@@ -159,7 +159,7 @@ namespace KlantenSimulatorDLDatabank
 
                 using (SqlBulkCopy bulkstraten = new SqlBulkCopy(con, SqlBulkCopyOptions.Default, transaction))
                 {
-                    DataTable straatTabel = new DataTable("straat");
+                    DataTable straatTabel = new DataTable("straten");
                     straatTabel.Columns.Add("stad_id", typeof(int));
                     straatTabel.Columns.Add("naam", typeof(string));
              
@@ -179,7 +179,7 @@ namespace KlantenSimulatorDLDatabank
                     }
                     bulkstraten.ColumnMappings.Add("stad_id", "stad_id");
                     bulkstraten.ColumnMappings.Add("naam", "naam");
-                    bulkstraten.DestinationTableName = "straat";
+                    bulkstraten.DestinationTableName = "straten";
                     bulkstraten.WriteToServer(straatTabel);
 
                 }
@@ -198,12 +198,12 @@ namespace KlantenSimulatorDLDatabank
         public LandDataSet GetLandDataSet(int datasetId)
         {
             LandDataSet dataset;
-            const string SqlStatementLand = "select id, naam from land where id = @LandId";
-            const string SqlStatementDataset = "select land_id,Zijn_achternamen_neutraal, naam from dataset where id = @datasetID";
-            const string SqlStatementStad = "select id,naam from stad where dataset_id = @datasetID";
+            const string SqlStatementLand = "select id, naam from landen where id = @LandId";
+            const string SqlStatementDataset = "select land_id,Zijn_achternamen_neutraal, naam from land_datasets where id = @datasetID";
+            const string SqlStatementStad = "select id,naam from steden where dataset_id = @datasetID";
             // const string SqlStatementDataset = "Insert into dataset(land_id,naam,moment_aanmaak,Zijn_achternamen_neutraal) output INSERTED.ID values (@landId,@naam,@momentAanmaak,@achternamenNeutraal)";
-            const string SqlStatementStraat = "select str.id as id,str.stad_id as stad_id,str.naam as naam from straat str join stad st on st.id=str.stad_id where st.dataset_id = @datasetID";
-            const string SqlStatementNaam = "select id, naam,frequency,naam_type,gender from naamdata where dataset_id = @datasetID";
+            const string SqlStatementStraat = "select str.id as id,str.stad_id as stad_id,str.naam as naam from straten str join steden st on st.id=str.stad_id where st.dataset_id = @datasetID";
+            const string SqlStatementNaam = "select id, naam,frequency,naam_type,gender from namen where dataset_id = @datasetID";
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 

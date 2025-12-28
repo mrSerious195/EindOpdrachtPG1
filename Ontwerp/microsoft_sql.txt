@@ -13,82 +13,99 @@ GO
 USE klantenGenerator;
 GO
 
-CREATE TABLE land (
+CREATE TABLE landen (
     id INT IDENTITY(1,1) NOT NULL,
     naam NVARCHAR(500) NOT NULL,
-    CONSTRAINT PK_land PRIMARY KEY (id)
+    CONSTRAINT PK_landen PRIMARY KEY (id)
 );
 
-CREATE TABLE dataset (
+CREATE TABLE land_datasets (
     id INT IDENTITY(1,1) NOT NULL,
     land_id INT NOT NULL,
     naam NVARCHAR(500),
     moment_aanmaak DATETIME,
      Zijn_achternamen_neutraal BIT,
-    CONSTRAINT PK_dataset PRIMARY KEY (id),
-    CONSTRAINT FK_dataset_land
-        FOREIGN KEY (land_id) REFERENCES land(id)
+    CONSTRAINT PK_datasets PRIMARY KEY (id),
+    CONSTRAINT FK_land_datasets_landen
+        FOREIGN KEY (land_id) REFERENCES landen(id)
 );
 
-CREATE TABLE stad (
+CREATE TABLE steden (
     id INT IDENTITY(1,1) NOT NULL,
     dataset_id INT NOT NULL,
     naam NVARCHAR(500) NOT NULL,
-    CONSTRAINT PK_stad PRIMARY KEY (id),
-    CONSTRAINT FK_stad_dataset
-        FOREIGN KEY (dataset_id) REFERENCES dataset(id)
+    CONSTRAINT PK_steden PRIMARY KEY (id),
+    CONSTRAINT FK_steden_land_datasets
+        FOREIGN KEY (dataset_id) REFERENCES land_datasets(id)
 );
 
-CREATE TABLE straat (
+CREATE TABLE straten (
     id INT IDENTITY(1,1) NOT NULL,
     stad_id INT NOT NULL,
     naam NVARCHAR(500) NOT NULL,
-    CONSTRAINT PK_straat PRIMARY KEY (id),
-    CONSTRAINT FK_straat_stad
-        FOREIGN KEY (stad_id) REFERENCES stad(id)
+    CONSTRAINT PK_straaten PRIMARY KEY (id),
+    CONSTRAINT FK_straaten_steden
+        FOREIGN KEY (stad_id) REFERENCES steden(id)
 );
 
-CREATE TABLE naamdata (
+CREATE TABLE namen (
     id INT IDENTITY(1,1) NOT NULL,
     dataset_id INT NOT NULL,
     naam NVARCHAR(500) NOT NULL,
     frequency INT,
     gender CHAR(1) NOT NULL,
     naam_type NVARCHAR(50),
-    CONSTRAINT PK_naamdata PRIMARY KEY (id),
-    CONSTRAINT FK_naamdata_dataset
-        FOREIGN KEY (dataset_id) REFERENCES dataset(id)
+    CONSTRAINT PK_naamen PRIMARY KEY (id),
+    CONSTRAINT FK_naamen_land_datasets
+        FOREIGN KEY (dataset_id) REFERENCES land_datasets(id)
 );
 
-CREATE TABLE bedrijf (
+CREATE TABLE bedrijven (
     id INT IDENTITY(1,1) NOT NULL,
     naam NVARCHAR(500) NOT NULL,
-    CONSTRAINT PK_bedrijf PRIMARY KEY (id)
+    CONSTRAINT PK_bedrijven PRIMARY KEY (id)
 );
 
-CREATE TABLE simulatie (
+CREATE TABLE simulaties (
     id INT IDENTITY(1,1) NOT NULL,
     dataset_id INT NOT NULL,
     bedrijf_id INT NOT NULL,
     simulatie_tijd DATETIME,
     seed INT,
+    kans_op_letter_in_huisnr DECIMAL(3,2),
+    maximum_HuisNr INT,
+    Aantal_Mogelijke_Letters_In_HuisNr DECIMAL(2,0),
     minimumleeftijd DECIMAL(3,0),
     maximumleeftijd DECIMAL(3,0),
-    CONSTRAINT PK_simulatie PRIMARY KEY (id),
-    CONSTRAINT FK_simulatie_dataset
-        FOREIGN KEY (dataset_id) REFERENCES dataset(id),
-    CONSTRAINT FK_simulatie_bedrijf
-        FOREIGN KEY (bedrijf_id) REFERENCES bedrijf(id)
+    CONSTRAINT PK_simulaties PRIMARY KEY (id),
+    CONSTRAINT FK_simulaties_land_datasets
+        FOREIGN KEY (dataset_id) REFERENCES land_datasets(id),
+    CONSTRAINT FK_simulaties_bedrijven
+        FOREIGN KEY (bedrijf_id) REFERENCES bedrijven(id)
 );
 
-CREATE TABLE simklant (
+CREATE TABLE simulatie_stad_limitaties(
+    simulatie_id INT,
+    stad_id INT,
+     CONSTRAINT PK_simulatie_stad_limitaties PRIMARY KEY (simulatie_id,stad_id),
+    CONSTRAINT FK_simulaties_simulatie_stad_limitatie
+        FOREIGN KEY (simulatie_id) REFERENCES simulaties(id),
+    CONSTRAINT FK_steden_simulatie_stad_limitatie
+        FOREIGN KEY (stad_id) REFERENCES steden(id)
+)
+
+CREATE TABLE simklanten (
     id INT IDENTITY(1,1) NOT NULL,
     simulatie_id INT NOT NULL,
     geboortedatum DATE,
     geslacht CHAR(1),
     voornaam NVARCHAR(500),
     achternaam NVARCHAR(500),
+    HuisNr VARCHAR(20),
+    straat_id INT,
     CONSTRAINT PK_simklant PRIMARY KEY (id),
-    CONSTRAINT FK_simklant_simulatie
-        FOREIGN KEY (simulatie_id) REFERENCES simulatie(id)
+    CONSTRAINT FK_simklant_simulaties
+        FOREIGN KEY (simulatie_id) REFERENCES simulaties(id),
+    CONSTRAINT FK_simklant_straten
+        FOREIGN KEY (straat_id) REFERENCES straten(id)
 );
