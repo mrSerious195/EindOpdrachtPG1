@@ -31,5 +31,11 @@ namespace KlantenSimulatorBL.Services
         }
 
 
+        public List<SimpeleSimulatieInfoDTO> GeefSimpeleInfoVanSimulaties()
+        {
+            return _simulatieManager.GeefSimpeleInfoVanSimulaties();
+        }
+
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using KlantenSimulatorBL.Domein;
+using KlantenSimulatorBL.DTO;
 using KlantenSimulatorBL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,11 @@ namespace KlantenSimulatorBL.Managers
         public void SaveSimulatie(Simulatie sim)
         {
             _repo.SaveKlantenSimulatie(sim);
+        }
+
+        public List<SimpeleSimulatieInfoDTO> GeefSimpeleInfoVanSimulaties()
+        {
+            return _repo.GeefSimpeleInfoVanSimulaties();
         }
     }
 }

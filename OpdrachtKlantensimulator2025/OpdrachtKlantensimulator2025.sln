@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlantenSimulatorIO", "Klant
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlantenSimulatorSimUtils", "KlantenSimulatorSimUtils\KlantenSimulatorSimUtils.csproj", "{A30C76AE-D677-41A7-B5F6-8C16FEB4380E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KlantenSimulatorGUI", "KlantenSimulatorGUI\KlantenSimulatorGUI.csproj", "{EFAF05E1-A46D-4CD3-81B0-AE22DCADB42D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{A30C76AE-D677-41A7-B5F6-8C16FEB4380E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A30C76AE-D677-41A7-B5F6-8C16FEB4380E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A30C76AE-D677-41A7-B5F6-8C16FEB4380E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFAF05E1-A46D-4CD3-81B0-AE22DCADB42D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFAF05E1-A46D-4CD3-81B0-AE22DCADB42D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFAF05E1-A46D-4CD3-81B0-AE22DCADB42D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFAF05E1-A46D-4CD3-81B0-AE22DCADB42D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

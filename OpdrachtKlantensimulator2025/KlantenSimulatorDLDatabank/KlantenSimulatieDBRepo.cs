@@ -1,4 +1,5 @@
 ﻿using KlantenSimulatorBL.Domein;
+using KlantenSimulatorBL.DTO;
 using KlantenSimulatorBL.Interfaces;
 using Microsoft.Data.SqlClient;
 using System;
@@ -17,6 +18,28 @@ namespace KlantenSimulatorDLDatabank
         public KlantenSimulatieDBRepo(string connectionString)
         {
             _connectionString = connectionString;
+        }
+
+        public List<SimpeleSimulatieInfoDTO> GeefSimpeleInfoVanSimulaties()
+        {
+            List<SimpeleSimulatieInfoDTO> ret = new();
+            const string sqlStatementZoekBedrijf = "select s.id as id, b.naam as opdrachtgever, ld.naam as dataset, l.naam as land, count(k.id) as hoeveel_klanten, ld.moment_aanmaak as simTime from simulaties s join bedrijven b on s.bedrijf_id=b.id join land_datasets ld on s.dataset_id=ld.id join landen l on ld.land_id = l.id left join simklanten k on k.simulatie_id=s.id group by  s.id,b.naam, ld.naam, l.naam, ld.moment_aanmaak;";
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+                using (SqlCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText= sqlStatementZoekBedrijf;
+                    IDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read()) {
+                        SimpeleSimulatieInfoDTO dto = new SimpeleSimulatieInfoDTO((int)reader["id"],(string)reader["opdrachtgever"], (int)reader["hoeveel_klanten"], (string)reader["dataset"], (string)reader["land"], (DateTime)reader["simTime"]);
+                        ret.Add(dto);
+                    }
+                    reader.Close();
+                }
+                }
+            return ret;
         }
 
         public void SaveKlantenSimulatie(Simulatie sim)
