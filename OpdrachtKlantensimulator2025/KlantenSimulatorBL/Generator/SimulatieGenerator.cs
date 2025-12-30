@@ -14,17 +14,13 @@ namespace KlantenSimulatorBL.Generator
             this.dataSetManager = dataSetManager;
         }
 
+       
+
+
         public Simulatie generateSimulatie(SimulatieSetupDataDTO dataVoorSimulatie)
         {
-            int seed = Random.Shared.Next();
-            return generateSimulatie(dataVoorSimulatie, seed);
-        }
-
-
-        public Simulatie generateSimulatie(SimulatieSetupDataDTO dataVoorSimulatie,int seed)
-        {
            
-            Random random = new Random(seed);
+             Random random = new Random(dataVoorSimulatie.Seed);
             LandDataSet landData = dataSetManager.GetLandDataSet(dataVoorSimulatie.LandDataSetID);
           
             List<Straat> straten;
@@ -55,7 +51,7 @@ namespace KlantenSimulatorBL.Generator
             KlantenGenerator klantenGenerator = new(adressenGenerator, dataVoorSimulatie.MinimumLeeftijd, dataVoorSimulatie.MaximumLeeftijd, landData.VoornamenV, landData.VoornamenM, landData.AchternamenV, landData.AchternamenM, random);
 
             List<Klant> klanten = klantenGenerator.GenereerKlanten(dataVoorSimulatie.TootaalAantalKlanten);
-            Simulatie simulatie = new(seed,landData.Id.Value, landData.Land, dataVoorSimulatie.MinimumLeeftijd, dataVoorSimulatie.MaximumLeeftijd, dataVoorSimulatie.KansVoorHuisNrMetLetter, stedenlimitatie.ToList(), dataVoorSimulatie.AantalMogelijkeLettersInHuisNr, dataVoorSimulatie.MaximumHuisNr, dataVoorSimulatie.Opdrachtgever, klanten);
+            Simulatie simulatie = new(dataVoorSimulatie.Seed, landData.Id.Value, landData.Land, dataVoorSimulatie.MinimumLeeftijd, dataVoorSimulatie.MaximumLeeftijd, dataVoorSimulatie.KansVoorHuisNrMetLetter, stedenlimitatie.ToList(), dataVoorSimulatie.AantalMogelijkeLettersInHuisNr, dataVoorSimulatie.MaximumHuisNr, dataVoorSimulatie.Opdrachtgever, klanten);
             return simulatie;
         }
     }

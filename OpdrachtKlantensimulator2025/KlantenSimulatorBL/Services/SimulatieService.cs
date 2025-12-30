@@ -12,15 +12,19 @@ namespace KlantenSimulatorBL.Services
 {
     public class SimulatieService
     {
-      //  private LandDataSetManager landDataSetManager;
+
         private SimulatieManager _simulatieManager;
         private SimulatieGenerator _simulatieGenerator;
+        private OpdrachtGeverManager _opdrachtGeverManager;
+        private LandDataSetManager _dataSetManager;
 
 
-        public SimulatieService(SimulatieGenerator simulatieGenerator, SimulatieManager simulatieManager)
+        public SimulatieService(OpdrachtGeverManager opdrachtGeverManager, LandDataSetManager dataSetManager, SimulatieManager simulatieManager)
         {
-            _simulatieGenerator = simulatieGenerator;
+            _dataSetManager=dataSetManager;
+            _simulatieGenerator = new SimulatieGenerator(dataSetManager);
             _simulatieManager = simulatieManager;
+            _opdrachtGeverManager= opdrachtGeverManager;
         }
 
         public Simulatie genereerSimulatie(SimulatieSetupDataDTO data)
@@ -36,6 +40,14 @@ namespace KlantenSimulatorBL.Services
             return _simulatieManager.GeefSimpeleInfoVanSimulaties();
         }
 
+        public List<String> GeefAlleOpdrachtGevers()
+        {
+            return _opdrachtGeverManager.GeefAlleOpdrachtGevers();
+        }
+        public void VoegOpdrachtGeverToe(string naam)
+        {
+             _opdrachtGeverManager.VoegOpdrachtGeverToe(naam);
+        }
 
     }
 }

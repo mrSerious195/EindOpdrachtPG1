@@ -4,9 +4,9 @@ using KlantenSimulatorBL.Services;
 using KlantenSimulatorSimUtils;
 
 string databankpad = @"Data Source=ROWALD\SQLEXPRESS; Initial Catalog = klantenGenerator; Integrated Security = True; Connect Timeout = 30; Encrypt = True; Trust Server Certificate=True; Application Intent = ReadWrite; Multi Subnet Failover=False";
-SimulatieService serv =KlantenSimulatieFactory.geefServise(databankpad);
+SimulatieService serv =KlantenSimulatieFactory.GeefServise(databankpad);
 
-SimulatieSetupDataDTO data = new(2, 18, 100, 25, 5, 1000, 0.1f, "Rowald", new());
+SimulatieSetupDataDTO data = new(1,2, 18, 100, 25, 5, 1000, 0.1f, "Rowald", new());
 Simulatie sim = serv.genereerSimulatie(data);
 
 

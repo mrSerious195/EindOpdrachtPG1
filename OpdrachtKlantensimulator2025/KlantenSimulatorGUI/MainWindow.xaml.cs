@@ -31,7 +31,7 @@ namespace KlantenSimulatorGUI
         {
             const string databankString = @"Data Source=ROWALD\SQLEXPRESS; Initial Catalog = klantenGenerator; Integrated Security = True; Connect Timeout = 30; Encrypt = True; Trust Server Certificate=True; Application Intent = ReadWrite; Multi Subnet Failover=False;";
             InitializeComponent();
-            _simService = KlantenSimulatieFactory.geefServise(databankString);
+            _simService = KlantenSimulatieFactory.GeefServise(databankString);
             _zichtbareSimulaties = new(_simService.GeefSimpeleInfoVanSimulaties());
             _hiddenSimulaties = new();
            
@@ -99,6 +99,13 @@ namespace KlantenSimulatorGUI
         }
 
 
-       
-    }
+        private void NieuseSimulatie(object sender, RoutedEventArgs e)
+        {
+           var window = new NieuweKlantenSimulatieWindow(_simService);
+            window.Show();
+        }
+
+
+
+        }
 }

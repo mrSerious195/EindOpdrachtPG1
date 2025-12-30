@@ -19,7 +19,7 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
-        <Button Content="Generate new dataset"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
+        <Button Content="Generate new dataset" Click="NieuseSimulatie"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
         <Button Content="Search" Click="SearchSimulaties" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"/>
         <TextBox Name="Searchbox" TextWrapping="Wrap" Text="" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="0"/>
         

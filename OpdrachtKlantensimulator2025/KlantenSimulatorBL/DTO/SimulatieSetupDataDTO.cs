@@ -16,13 +16,15 @@ namespace KlantenSimulatorBL.DTO
         public int TootaalAantalKlanten;
         public float KansVoorHuisNrMetLetter;
         public string Opdrachtgever;
+        public int Seed;
         /// <summary>
         /// als deze leeg zou zijn worden de <TootaalAantalKlanten> verdeeld at random.
         /// </summary>
         public HashSet<int>? GelimiteerdTotStedenStadIDs;
 
-        public SimulatieSetupDataDTO(int landDataSetID, int minimumLeeftijd, int maximumLeeftijd, int maximumHuisNr, int aantalMogelijkeLettersInHuisNr, int tootaalAantalKlanten, float kansVoorHuisNrMetLetter, string opdrachtgever, HashSet<int>? gelimiteerdTotStedenStadIDs)
+        public SimulatieSetupDataDTO(int seed,int landDataSetID, int minimumLeeftijd, int maximumLeeftijd, int maximumHuisNr, int aantalMogelijkeLettersInHuisNr, int tootaalAantalKlanten, float kansVoorHuisNrMetLetter, string opdrachtgever, HashSet<int>? gelimiteerdTotStedenStadIDs)
         {
+            Seed = seed;
             LandDataSetID = landDataSetID;
             MinimumLeeftijd = minimumLeeftijd;
             MaximumLeeftijd = maximumLeeftijd;
