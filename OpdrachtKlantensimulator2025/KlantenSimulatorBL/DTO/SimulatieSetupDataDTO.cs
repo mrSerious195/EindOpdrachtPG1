@@ -20,9 +20,9 @@ namespace KlantenSimulatorBL.DTO
         /// <summary>
         /// als deze leeg zou zijn worden de <TootaalAantalKlanten> verdeeld at random.
         /// </summary>
-        public HashSet<int>? GelimiteerdTotStedenStadIDs;
+        public List<int>? GelimiteerdTotStedenStadIDs;
 
-        public SimulatieSetupDataDTO(int seed,int landDataSetID, int minimumLeeftijd, int maximumLeeftijd, int maximumHuisNr, int aantalMogelijkeLettersInHuisNr, int tootaalAantalKlanten, float kansVoorHuisNrMetLetter, string opdrachtgever, HashSet<int>? gelimiteerdTotStedenStadIDs)
+        public SimulatieSetupDataDTO(int seed,int landDataSetID, int minimumLeeftijd, int maximumLeeftijd, int maximumHuisNr, int aantalMogelijkeLettersInHuisNr, int tootaalAantalKlanten, float kansVoorHuisNrMetLetter, string opdrachtgever, List<int>? gelimiteerdTotStedenStadIDs)
         {
             Seed = seed;
             LandDataSetID = landDataSetID;

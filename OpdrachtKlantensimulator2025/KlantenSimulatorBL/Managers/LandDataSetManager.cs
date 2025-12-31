@@ -1,4 +1,5 @@
 ﻿using KlantenSimulatorBL.Domein;
+using KlantenSimulatorBL.DTO;
 using KlantenSimulatorBL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,11 @@ namespace KlantenSimulatorBL.Managers
         public LandDataSet GetLandDataSet(int DatasetId)
         {
             return _repo.GetLandDataSet(DatasetId);
+        }
+
+        public List<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo()
+        {
+            return _repo.GeefSimpeleDataSetInfo();
         }
 
     }

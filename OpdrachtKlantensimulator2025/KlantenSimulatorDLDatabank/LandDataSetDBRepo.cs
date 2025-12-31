@@ -1,9 +1,12 @@
 ﻿using KlantenSimulatorBL.Domein;
+using KlantenSimulatorBL.DTO;
 using KlantenSimulatorBL.Enums;
 using KlantenSimulatorBL.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.Identity.Client;
+using System.Collections.Generic;
 using System.Data;
+using System.Reflection.Metadata.Ecma335;
 
 namespace KlantenSimulatorDLDatabank
 {
@@ -42,155 +45,155 @@ namespace KlantenSimulatorDLDatabank
                             string landNaam = landData.Land.Naam;
                             cmdHasLand.Parameters.AddWithValue("@voorwaarde", landNaam);
                             IDataReader reader = cmdHasLand.ExecuteReader();
-                        
-                            
+
+
                             if (reader.Read())
                             {
-                            landID = (int)reader["id"];
-                           
-                            reader.Close();
-                        }
-                        else
-                        {
-                            reader.Close();
-                            cmdLand.Parameters.AddWithValue("@naam", landNaam);
-                            landID = (int)cmdLand.ExecuteScalar();
-                        }
-                            landData.Land.Id=landID;
-                        
+                                landID = (int)reader["id"];
 
-                    }
+                                reader.Close();
+                            }
+                            else
+                            {
+                                reader.Close();
+                                cmdLand.Parameters.AddWithValue("@naam", landNaam);
+                                landID = (int)cmdLand.ExecuteScalar();
+                            }
+                            landData.Land.Id = landID;
+
+
+                        }
                     }
                     int datasetID;
                     using (SqlCommand cmdDataset = con.CreateCommand())
                     {
                         cmdDataset.Transaction = transaction;
-                    cmdDataset.CommandText = sqlStatementDataset;
-                    cmdDataset.Parameters.AddWithValue("@landId", landID);
-                    cmdDataset.Parameters.AddWithValue("@naam", landData.NaamDataSet);
-                    cmdDataset.Parameters.AddWithValue("@achternamenNeutraal", landData.ZijnAchternamenVMHetzelfde);
-                    cmdDataset.Parameters.AddWithValue("@momentAanmaak", DateTime.Now);
-                    datasetID= (int)cmdDataset.ExecuteScalar();
-                }
-
-                using (SqlBulkCopy bulkNamen = new SqlBulkCopy(con, SqlBulkCopyOptions.Default, transaction))
-                {
-
-                    DataTable NaamTabel = new DataTable("namen");
-                    NaamTabel.Columns.Add("dataset_id", typeof(int));
-                    NaamTabel.Columns.Add("naam", typeof(string));
-                    NaamTabel.Columns.Add("frequency", typeof(int));
-                    NaamTabel.Columns.Add("naam_type", typeof(string));
-                    NaamTabel.Columns.Add("gender", typeof(char));
-                    List<List<NaamInfo>> naamlijsten;
-                    if (landData.ZijnAchternamenVMHetzelfde)
-                    {
-                        naamlijsten = [landData.VoornamenM, landData.VoornamenV, landData.AchternamenM];
+                        cmdDataset.CommandText = sqlStatementDataset;
+                        cmdDataset.Parameters.AddWithValue("@landId", landID);
+                        cmdDataset.Parameters.AddWithValue("@naam", landData.NaamDataSet);
+                        cmdDataset.Parameters.AddWithValue("@achternamenNeutraal", landData.ZijnAchternamenVMHetzelfde);
+                        cmdDataset.Parameters.AddWithValue("@momentAanmaak", DateTime.Now);
+                        datasetID = (int)cmdDataset.ExecuteScalar();
                     }
-                    else
+
+                    using (SqlBulkCopy bulkNamen = new SqlBulkCopy(con, SqlBulkCopyOptions.Default, transaction))
                     {
-                        naamlijsten = [landData.VoornamenM, landData.VoornamenV, landData.AchternamenM,landData.AchternamenV];
-                    }
+
+                        DataTable NaamTabel = new DataTable("namen");
+                        NaamTabel.Columns.Add("dataset_id", typeof(int));
+                        NaamTabel.Columns.Add("naam", typeof(string));
+                        NaamTabel.Columns.Add("frequency", typeof(int));
+                        NaamTabel.Columns.Add("naam_type", typeof(string));
+                        NaamTabel.Columns.Add("gender", typeof(char));
+                        List<List<NaamInfo>> naamlijsten;
+                        if (landData.ZijnAchternamenVMHetzelfde)
+                        {
+                            naamlijsten = [landData.VoornamenM, landData.VoornamenV, landData.AchternamenM];
+                        }
+                        else
+                        {
+                            naamlijsten = [landData.VoornamenM, landData.VoornamenV, landData.AchternamenM, landData.AchternamenV];
+                        }
                         foreach (List<NaamInfo> naamlijst in naamlijsten)
                         {
-                        char genderasChar;
-                        GramaticaalGeslacht geslacht = naamlijst.First().Geslacht;
-                        switch (geslacht)
-                        {
-                            case GramaticaalGeslacht.Man: genderasChar = 'M'; break;
-                            case GramaticaalGeslacht.Vrouw: genderasChar = 'V'; break;
-                            case GramaticaalGeslacht.Onzijdig: genderasChar = 'O'; break;
-                            default: throw new Exception($"DatasetDBRepo hasn't implemented {geslacht}");
-                        }
-                        foreach (NaamInfo n in naamlijst) {
-                           
+                            char genderasChar;
+                            GramaticaalGeslacht geslacht = naamlijst.First().Geslacht;
+                            switch (geslacht)
+                            {
+                                case GramaticaalGeslacht.Man: genderasChar = 'M'; break;
+                                case GramaticaalGeslacht.Vrouw: genderasChar = 'V'; break;
+                                case GramaticaalGeslacht.Onzijdig: genderasChar = 'O'; break;
+                                default: throw new Exception($"DatasetDBRepo hasn't implemented {geslacht}");
+                            }
+                            foreach (NaamInfo n in naamlijst) {
+
                                 NaamTabel.Rows.Add(datasetID, n.Naam, n.Frequency, n.NaamSoort.ToString(), genderasChar);
                             }
 
                         }
-                    bulkNamen.ColumnMappings.Add("dataset_id", "dataset_id");
-                    bulkNamen.ColumnMappings.Add("naam", "naam");
-                    bulkNamen.ColumnMappings.Add("frequency", "frequency");
-                    bulkNamen.ColumnMappings.Add("naam_type", "naam_type");
-                    bulkNamen.ColumnMappings.Add("gender", "gender");
-                    bulkNamen.DestinationTableName = "namen";
-                    bulkNamen.WriteToServer(NaamTabel);
-                }
+                        bulkNamen.ColumnMappings.Add("dataset_id", "dataset_id");
+                        bulkNamen.ColumnMappings.Add("naam", "naam");
+                        bulkNamen.ColumnMappings.Add("frequency", "frequency");
+                        bulkNamen.ColumnMappings.Add("naam_type", "naam_type");
+                        bulkNamen.ColumnMappings.Add("gender", "gender");
+                        bulkNamen.DestinationTableName = "namen";
+                        bulkNamen.WriteToServer(NaamTabel);
+                    }
 
 
-                using (SqlBulkCopy bulkSteden = new SqlBulkCopy(con, SqlBulkCopyOptions.Default, transaction))
-                {
-
-                    DataTable stadTabel = new DataTable("steden");
-                    stadTabel.Columns.Add("dataset_id", typeof(int));
-                    stadTabel.Columns.Add("naam", typeof(string));
-                    HashSet<string> steden = new();
-                    foreach (Straat s in landData.Straten)
+                    using (SqlBulkCopy bulkSteden = new SqlBulkCopy(con, SqlBulkCopyOptions.Default, transaction))
                     {
-                        string stadnaam = s.Stad.Naam;
-                        if (!steden.Contains(stadnaam))
+
+                        DataTable stadTabel = new DataTable("steden");
+                        stadTabel.Columns.Add("dataset_id", typeof(int));
+                        stadTabel.Columns.Add("naam", typeof(string));
+                        HashSet<string> steden = new();
+                        foreach (Straat s in landData.Straten)
                         {
-                            steden.Add(stadnaam);
-                            stadTabel.Rows.Add(datasetID, stadnaam);
+                            string stadnaam = s.Stad.Naam;
+                            if (!steden.Contains(stadnaam))
+                            {
+                                steden.Add(stadnaam);
+                                stadTabel.Rows.Add(datasetID, stadnaam);
+                            }
+
                         }
+                        bulkSteden.ColumnMappings.Add("dataset_id", "dataset_id");
+                        bulkSteden.ColumnMappings.Add("naam", "naam");
+                        bulkSteden.DestinationTableName = "steden";
+                        bulkSteden.WriteToServer(stadTabel);
+                    }
+
+
+                    Dictionary<string, int> StadToId = new();
+                    using (SqlCommand cmdLookupCityID = con.CreateCommand())
+                    {
+                        cmdLookupCityID.CommandText = sqlStatementLookupCityID;
+                        cmdLookupCityID.Transaction = transaction;
+                        cmdLookupCityID.Parameters.AddWithValue("@datasetid", datasetID);
+                        IDataReader reader = cmdLookupCityID.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            StadToId[(string)reader["naam"]] = (int)reader["id"];
+                        }
+                        reader.Close();
+                    }
+
+
+                    using (SqlBulkCopy bulkstraten = new SqlBulkCopy(con, SqlBulkCopyOptions.Default, transaction))
+                    {
+                        DataTable straatTabel = new DataTable("straten");
+                        straatTabel.Columns.Add("stad_id", typeof(int));
+                        straatTabel.Columns.Add("naam", typeof(string));
+
+                        foreach (Straat s in landData.Straten)
+                        {
+                            if (StadToId.TryGetValue(s.Stad.Naam, out int stadId))
+                            {
+                                straatTabel.Rows.Add(stadId, s.Naam);
+
+                            }
+                            else
+                            {
+                                throw new Exception($"Stad {s.Stad.Naam} not in dictionary steden");
+                            }
+
+
+                        }
+                        bulkstraten.ColumnMappings.Add("stad_id", "stad_id");
+                        bulkstraten.ColumnMappings.Add("naam", "naam");
+                        bulkstraten.DestinationTableName = "straten";
+                        bulkstraten.WriteToServer(straatTabel);
 
                     }
-                    bulkSteden.ColumnMappings.Add("dataset_id", "dataset_id");
-                    bulkSteden.ColumnMappings.Add("naam", "naam");
-                    bulkSteden.DestinationTableName = "steden";
-                    bulkSteden.WriteToServer(stadTabel);
-                }
-
-             
-                Dictionary<string, int> StadToId = new();
-                using(SqlCommand cmdLookupCityID = con.CreateCommand())
-                {
-                    cmdLookupCityID.CommandText = sqlStatementLookupCityID;
-                    cmdLookupCityID.Transaction = transaction;
-                    cmdLookupCityID.Parameters.AddWithValue("@datasetid", datasetID);
-                    IDataReader reader = cmdLookupCityID.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        StadToId[(string)reader["naam"]] = (int)reader["id"];
-                    }
-                    reader.Close();
-                }
-               
-
-                using (SqlBulkCopy bulkstraten = new SqlBulkCopy(con, SqlBulkCopyOptions.Default, transaction))
-                {
-                    DataTable straatTabel = new DataTable("straten");
-                    straatTabel.Columns.Add("stad_id", typeof(int));
-                    straatTabel.Columns.Add("naam", typeof(string));
-             
-                    foreach (Straat s in landData.Straten)
-                    {
-                        if (StadToId.TryGetValue(s.Stad.Naam, out int stadId))
-                        {
-                            straatTabel.Rows.Add(stadId, s.Naam);
-                           
-                        }
-                        else
-                        {
-                            throw new Exception($"Stad {s.Stad.Naam} not in dictionary steden");
-                        }
-                       
-
-                    }
-                    bulkstraten.ColumnMappings.Add("stad_id", "stad_id");
-                    bulkstraten.ColumnMappings.Add("naam", "naam");
-                    bulkstraten.DestinationTableName = "straten";
-                    bulkstraten.WriteToServer(straatTabel);
-
-                }
-                transaction.Commit();
+                    transaction.Commit();
                 }
                 catch (Exception ex)
                 {
-                transaction.Rollback();
+                    transaction.Rollback();
                     throw ex;
+                }
             }
-        }
 
         }
 
@@ -206,7 +209,7 @@ namespace KlantenSimulatorDLDatabank
             const string SqlStatementNaam = "select id, naam,frequency,naam_type,gender from namen where dataset_id = @datasetID";
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                
+
                 con.Open();
                 int LandID;
                 bool ZijnAchternamenNeutraal;
@@ -226,14 +229,14 @@ namespace KlantenSimulatorDLDatabank
                 Land land;
                 using (SqlCommand sqlcmdLand = con.CreateCommand())
                 {
-                    sqlcmdLand.CommandText = SqlStatementLand;;
+                    sqlcmdLand.CommandText = SqlStatementLand; ;
                     sqlcmdLand.Parameters.AddWithValue("@LandId", LandID);
                     IDataReader reader = sqlcmdLand.ExecuteReader();
                     reader.Read();
                     land = new((int)reader["id"], (string)reader["naam"]);
                     reader.Close();
                 }
-               
+
                 Dictionary<int, Stad> IdToSteden = new();
                 using (SqlCommand sqlcmdstad = con.CreateCommand())
                 {
@@ -243,11 +246,11 @@ namespace KlantenSimulatorDLDatabank
                     while (reader.Read())
                     {
                         Stad stad = new((int)reader["id"], land, (string)reader["naam"]);
-                        IdToSteden[stad.Id.Value]= stad;
+                        IdToSteden[stad.Id.Value] = stad;
                     }
                     reader.Close();
                 }
-                List<Straat> straten=new();
+                List<Straat> straten = new();
                 using (SqlCommand sqlcmdstraat = con.CreateCommand())
                 {
                     sqlcmdstraat.CommandText = SqlStatementStraat;
@@ -261,7 +264,7 @@ namespace KlantenSimulatorDLDatabank
                     reader.Close();
                 }
 
-                
+
 
                 using (SqlCommand sqlcmdNaam = con.CreateCommand())
                 {
@@ -275,11 +278,11 @@ namespace KlantenSimulatorDLDatabank
                         List<NaamInfo> AchterNamen = new();
                         while (reader.Read()) {
                             GramaticaalGeslacht geslacht = CharToGramaticaalgeslacht(((string)reader["gender"])[0]);
-                           
-                            NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort),(string)reader["naam_type"]);
+
+                            NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort), (string)reader["naam_type"]);
                             List<NaamInfo> naamlijst;
 
-                            switch((geslacht, naamsoort))
+                            switch ((geslacht, naamsoort))
                             {
                                 case (GramaticaalGeslacht.Man, NaamSoort.Voornaam): naamlijst = voornamenM; break;
                                 case (GramaticaalGeslacht.Vrouw, NaamSoort.Voornaam): naamlijst = voornamenV; break;
@@ -343,7 +346,42 @@ namespace KlantenSimulatorDLDatabank
             }
         }
 
+        public List<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo()
+        {
+            List<SimpeleLandDataSetDTO> ret = new();
+            const string SqlStatement = "select ld.id, l.naam as Land, ld.naam as dataset,  s.aantal as steden, vn.aantal as voornamen, an.aantal as achternamen from landen l join land_datasets ld on ld.land_id = l.id join (select count(id) as aantal, dataset_id from steden group by dataset_id) s on s.dataset_id=ld.id join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType group by dataset_id) vn on vn.dataset_id=ld.id join (select count(id) as aantal, dataset_id from namen where naam_type=@AchterNaamType group by dataset_id) an on an.dataset_id=ld.id";
+            /*
+             select ld.id,
+             l.naam as Land,
+             ld.naam as dataset,
+             s.aantal as steden,
+             vn.aantal as voornamen,
+             an.aantal as achternamen
+         from landen l
+         join land_datasets ld on ld.land_id = l.id
+         join (select count(id) as aantal, dataset_id from steden group by dataset_id) s on s.dataset_id=ld.id
+         join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType group by dataset_id) vn on vn.dataset_id=ld.id
+         join (select count(id) as aantal, dataset_id from namen where naam_type=@AchterNaamType group by dataset_id) an on an.dataset_id=ld.id
+             */
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
 
+                con.Open();
+                using (SqlCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = SqlStatement;
+                    cmd.Parameters.AddWithValue("@VoornaamType", NaamSoort.Voornaam.ToString());
+                    cmd.Parameters.AddWithValue("@AchterNaamType", NaamSoort.AchterNaam.ToString());
+                    IDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read()) {
+                        SimpeleLandDataSetDTO dto = new((int)reader["id"], (string)reader["dataset"], (string)reader["Land"], (int)reader["voornamen"], (int)reader["achternamen"], (int)reader["steden"]);
+                        ret.Add(dto);
+                    }
+                    reader.Close();
+                }
 
+            }
+            return ret;
+        }
     }
 }

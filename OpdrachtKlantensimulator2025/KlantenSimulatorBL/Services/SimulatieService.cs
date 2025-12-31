@@ -49,5 +49,11 @@ namespace KlantenSimulatorBL.Services
              _opdrachtGeverManager.VoegOpdrachtGeverToe(naam);
         }
 
+
+        public List<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo()
+        {
+            return _dataSetManager.GeefSimpeleDataSetInfo();
+        }
+
     }
 }
