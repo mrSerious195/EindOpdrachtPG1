@@ -33,5 +33,10 @@ namespace KlantenSimulatorBL.Managers
             return _repo.GeefSimpeleDataSetInfo();
         }
 
+        public List<StadDTO> GeefInfoSteden(int datasetID)
+        {
+            return _repo.GeefInfoSteden(datasetID);
+        }
+
     }
 }

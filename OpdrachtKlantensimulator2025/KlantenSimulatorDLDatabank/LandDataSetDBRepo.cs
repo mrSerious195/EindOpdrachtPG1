@@ -383,5 +383,32 @@ namespace KlantenSimulatorDLDatabank
             }
             return ret;
         }
+
+        
+
+        public List<StadDTO> GeefInfoSteden(int datasetId)
+        {
+            List<StadDTO> ret = new();
+            const string SqlStatement = "select id, naam from steden where dataset_id = @datasetID";
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+                using (SqlCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = SqlStatement;
+                    cmd.Parameters.AddWithValue("@datasetID", datasetId);
+                    IDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        StadDTO stad = new((string)reader["naam"], (int)reader["id"]);
+                        ret.Add(stad);
+                    }
+                    reader.Close();
+                }
+               
+            }
+            return ret;
+        }
+
     }
 }

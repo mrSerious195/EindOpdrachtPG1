@@ -105,7 +105,16 @@ namespace KlantenSimulatorGUI
             window.Show();
         }
 
+        public void MoreInfoClicked(object sender, RoutedEventArgs e)
+        {
+            var selectedRow = SimpleSimGrid.SelectedItem as SimpeleSimulatieInfoDTO;
+            if (selectedRow != null)
+            {
+                var window = new DetailedSimulationView(_simService, selectedRow.Id);
+                window.Show();
 
+            }
+        }
 
         }
 }

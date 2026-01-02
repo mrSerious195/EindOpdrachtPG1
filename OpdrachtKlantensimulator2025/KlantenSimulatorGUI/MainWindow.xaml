@@ -26,8 +26,14 @@
         <RadioButton GroupName="SearchOption"  Name="DatasetRadioButton" IsChecked="True" Content="Dataset" Grid.Column="2" Grid.Row="1"/>
         <RadioButton GroupName="SearchOption"  Name="LandRadioButton" Content="Land" Grid.Column="3" Grid.Row="1"/>
         <RadioButton GroupName="SearchOption"  Name="OpdrachtGeverRadioButton" Content="Opdrachtgever" Grid.Column="4" Grid.Row="1"/>
-        <DataGrid x:Name="SimpleSimGrid" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2" AutoGenerateColumns="True" d:ItemsSource="{d:SampleData ItemCount=5}"/>
-        
+        <DataGrid x:Name="SimpleSimGrid" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2" AutoGenerateColumns="True" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="More Info" Click="MoreInfoClicked"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+
 
 
 

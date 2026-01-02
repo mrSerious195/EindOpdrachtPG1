@@ -1,0 +1,33 @@
+﻿<Window x:Class="KlantenSimulatorGUI.StedenSelectieWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KlantenSimulatorGUI"
+        mc:Ignorable="d"
+        Title="StedenSelectieWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+       
+
+        <Button Click="SelectAllClicked"  Content="&gt;&gt;" Grid.Row="1" Grid.Column="1"/>
+        <Button Click="SelectSelected"  Content="&gt;" Grid.Row="2" Grid.Column="1"/>
+        <Button Click="UnSelectSelected" Content="&lt;" Grid.Row="3" Grid.Column="1"/>
+        <Button Click="UnSelectAllClicked" Content="&lt;&lt;" Grid.Row="4" Grid.Column="1"/>
+        <ListBox Name="NonSelectedBox" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Row="1" Grid.RowSpan="4" Grid.Column="0"/>
+        <ListBox Name="SelectedBox" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Row="1" Grid.RowSpan="4" Grid.Column="2"/>
+        <Label Content="Nietgeselecteerde Steden"/>
+        <Label Content="Geselecteerde Steden" Grid.Column="2"/>
+    </Grid>
+</Window>

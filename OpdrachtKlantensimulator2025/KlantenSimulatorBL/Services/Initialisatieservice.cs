@@ -23,10 +23,7 @@ namespace KlantenSimulatorBL.DomeinControlers
             _inLeesDataSetManager.LeesDataSet();
         }
 
-        public LandDataSetDTO GeefDataSetDTO()
-        {
-           return _inLeesDataSetManager.geefDataSetAlsDTO();
-        }
+       
 
         public LandDataSet testrepo(int id)
         {

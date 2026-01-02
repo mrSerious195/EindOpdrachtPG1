@@ -33,6 +33,7 @@ namespace KlantenSimulatorDLDatabank
                     {
                         ret.Add((string)reader["naam"]);
                     }
+                    reader.Close();
                 }
             }
             return ret;

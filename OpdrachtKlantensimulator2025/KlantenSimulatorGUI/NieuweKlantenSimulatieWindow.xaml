@@ -29,7 +29,7 @@
         <ComboBox Name="OpdrachtgeverBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"/>
         <Button Content="+" Click="NieuweOpdrachtGever" Grid.Row="0" Grid.Column="3"/>
         <Label Content="Dataset" Grid.Row="1" Grid.Column="0"/>
-        <ComboBox Grid.Row="1" Name="DatasetBox" Grid.Column="1" Grid.ColumnSpan="2"/>
+        <ComboBox SelectionChanged="DatasetBoxChanged" Grid.Row="1" Name="DatasetBox" Grid.Column="1" Grid.ColumnSpan="2"/>
         <Label Content="MinimumLeeftijd" Grid.Row="2" Grid.Column="0"/>
         <TextBox Name="MinimumLeeftijdBox" TextWrapping="Wrap" Text="TextBlock" Grid.Row="2" Grid.Column="1"/>
         <Label Content="MaximumLeeftijd" Grid.Row="2" Grid.Column="2"/>
@@ -50,6 +50,8 @@
         <Label Content="seed" Grid.Row="7" Grid.Column="0"/>
         <TextBox Name="SeedBox" TextWrapping="Wrap" Text="TextBlock" Grid.Row="7" Grid.Column="1"/>
         <Label Content="Gelimiteerd tot Steden" Grid.Row="8" Grid.Column="0"/>
+        <Button Click="OpenStedenSelectie" Content="Selecteer steden" Grid.Row="8" Grid.Column="1"/>
+        <Label Name="StedenLabel" Content="Geen steden geselecteerd" Grid.Row="8" Grid.Column="2"/>
         <Button Click="GenerateNewKlantenset" Content="Generate" Grid.Row="9" Grid.ColumnSpan="4"/>
     </Grid>
 </Window>

@@ -16,5 +16,7 @@ namespace KlantenSimulatorBL.Interfaces
         public LandDataSet GetLandDataSet(int datasetId);
 
         public List<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo();
+
+        public List<StadDTO> GeefInfoSteden(int datasetID);
     }
 }

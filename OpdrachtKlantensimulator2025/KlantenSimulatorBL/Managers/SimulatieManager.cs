@@ -26,5 +26,31 @@ namespace KlantenSimulatorBL.Managers
         {
             return _repo.GeefSimpeleInfoVanSimulaties();
         }
+
+        public DetailedSimulatieDTO GeefDetailedInfoVanSimulatie(int simulatie_id)
+        {
+            return _repo.GeefDetailedInfoVanSimulatie(simulatie_id);
+        }
+
+        public List<StadMetAantalKlantenDTO> GeefStadKlantenDistributieVanSimulatie(int simulatie_id)
+        {
+            return _repo.GeefStadKlantenDistributieVanSimulatie(simulatie_id);
+        }
+
+        public List<NaamMetAantalKlantedDTO> GeefNaamKlantenDistributieVanSimulatie(int simulatie_id)
+        {
+            return _repo.GeefNaamKlantenDistributieVanSimulatie(simulatie_id);
+        }
+
+        public KlantenDTO InfoOudsteKlant(int simulatie_id)
+        {
+            return _repo.InfoOudsteKlant(simulatie_id);
+        }
+
+        public KlantenDTO InfoJongsteKlant(int simulatie_id)
+        {
+            return _repo.InfoJongsteKlant(simulatie_id);
+        }
+
     }
 }
