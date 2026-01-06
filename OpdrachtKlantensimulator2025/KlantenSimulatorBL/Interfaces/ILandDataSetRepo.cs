@@ -13,10 +13,12 @@ namespace KlantenSimulatorBL.Interfaces
         public void SaveLandDataSet(LandDataSet landData);
 
 
-        public LandDataSet GetLandDataSet(int datasetId);
+        public Task<LandDataSet> GetLandDataSet(int datasetId);
 
-        public List<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo();
+        public Task<List<SimpeleLandDataSetDTO>> GeefSimpeleDataSetInfo();
 
-        public List<StadDTO> GeefInfoSteden(int datasetID);
+        public Task<List<StadDTO>> GeefInfoSteden(int datasetID);
+
+        public Task<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo(int datasetId);
     }
 }

@@ -2,6 +2,7 @@
 using KlantenSimulatorBL.Managers;
 using KlantenSimulatorBL.Services;
 using KlantenSimulatorDLDatabank;
+using KlantenSimulatorDLExporters;
 
 namespace KlantenSimulatorSimUtils
 {
@@ -15,7 +16,8 @@ namespace KlantenSimulatorSimUtils
             SimulatieManager simulatieManager = new(simrepo);
             OpdrachtGeversDBRepo opdrachtGeversDBRepo = new(DatabankConectionString);
             OpdrachtGeverManager opdrachtGeverManager = new(opdrachtGeversDBRepo);
-            SimulatieService service = new(opdrachtGeverManager, landDataSetManager, simulatieManager);
+            KlantenSimulatieExporter exporter = new();
+            SimulatieService service = new(exporter,opdrachtGeverManager, landDataSetManager, simulatieManager);
             return service;
 
         }

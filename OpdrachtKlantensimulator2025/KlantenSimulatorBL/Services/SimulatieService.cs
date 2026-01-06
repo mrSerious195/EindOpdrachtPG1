@@ -1,6 +1,8 @@
 ﻿using KlantenSimulatorBL.Domein;
 using KlantenSimulatorBL.DTO;
+using KlantenSimulatorBL.Enums;
 using KlantenSimulatorBL.Generator;
+using KlantenSimulatorBL.Interfaces;
 using KlantenSimulatorBL.Managers;
 using System;
 using System.Collections.Generic;
@@ -14,79 +16,131 @@ namespace KlantenSimulatorBL.Services
 {
     public class SimulatieService
     {
-
+        private IKlantenSimulatieExporter _klantenSimulatieExporter;
         private SimulatieManager _simulatieManager;
         private SimulatieGenerator _simulatieGenerator;
         private OpdrachtGeverManager _opdrachtGeverManager;
         private LandDataSetManager _landDataSetManager;
 
 
-        public SimulatieService(OpdrachtGeverManager opdrachtGeverManager, LandDataSetManager dataSetManager, SimulatieManager simulatieManager)
+        public SimulatieService(IKlantenSimulatieExporter klantenSimulatieExporter,OpdrachtGeverManager opdrachtGeverManager, LandDataSetManager dataSetManager, SimulatieManager simulatieManager)
         {
-            _landDataSetManager=dataSetManager;
-            _simulatieGenerator = new SimulatieGenerator(dataSetManager);
+            _klantenSimulatieExporter = klantenSimulatieExporter;
+            _landDataSetManager =dataSetManager;
+          
+            _simulatieGenerator = new SimulatieGenerator();
             _simulatieManager = simulatieManager;
             _opdrachtGeverManager= opdrachtGeverManager;
+            
         }
 
-        public Simulatie genereerSimulatie(SimulatieSetupDataDTO data)
+        public async Task<SimpeleSimulatieInfoDTO> genereerSimulatieAsync(SimulatieSetupDataDTO data)
         {
-            Simulatie sim = _simulatieGenerator.generateSimulatie(data);
-            _simulatieManager.SaveSimulatie(sim);
-            return sim;
+            LandDataSet landdata = await _landDataSetManager.GetLandDataSetAsync(data.LandDataSetID);
+            Simulatie sim = await _simulatieGenerator.generateSimulatieAsync(data, landdata);
+            int simId = await _simulatieManager.SaveSimulatie(sim);
+            return await _simulatieManager.GeefSimpeleInfoVanSimulatieAsync(simId);
         }
 
 
-        public List<SimpeleSimulatieInfoDTO> GeefSimpeleInfoVanSimulaties()
+        public async Task<List<SimpeleSimulatieInfoDTO>> GeefSimpeleInfoVanSimulatiesAsync()
         {
-            return _simulatieManager.GeefSimpeleInfoVanSimulaties();
+            return await _simulatieManager.GeefSimpeleInfoVanSimulatiesAsync();
         }
 
-        public List<String> GeefAlleOpdrachtGevers()
+        public async Task<List<string>> GeefAlleOpdrachtGeversAsync()
         {
-            return _opdrachtGeverManager.GeefAlleOpdrachtGevers();
+            return await _opdrachtGeverManager.GeefAlleOpdrachtGeversAsync();
         }
-        public void VoegOpdrachtGeverToe(string naam)
+        public async Task VoegOpdrachtGeverToe(string naam)
         {
-             _opdrachtGeverManager.VoegOpdrachtGeverToe(naam);
+           await  _opdrachtGeverManager.VoegOpdrachtGeverToe(naam);
         }
 
 
-        public List<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo()
+        public async Task<List<SimpeleLandDataSetDTO>> GeefSimpeleDataSetInfoAsync()
         {
-            return _landDataSetManager.GeefSimpeleDataSetInfo();
+            return await _landDataSetManager.GeefSimpeleDataSetInfoAsync();
         }
 
-        public List<StadDTO> GeefInfoSteden(int datasetID)
+        public async Task<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo(int datasetId)
         {
-            return _landDataSetManager.GeefInfoSteden(datasetID);
+            return await _landDataSetManager.GeefSimpeleDataSetInfo(datasetId);
         }
 
-        public DetailedSimulatieDTO GeefConfigInfoVanSimulatie(int simulatie_id)
+        public async Task<List<StadDTO>> GeefInfoStedenAsync(int datasetID)
         {
-            return _simulatieManager.GeefDetailedInfoVanSimulatie(simulatie_id);
+            return await _landDataSetManager.GeefInfoStedenAsync(datasetID);
         }
 
-        public List<StadMetAantalKlantenDTO> GeefStadKlantenDistributieVanSimulatie(int simulatie_id)
+        public async Task<DetailedSimulatieDTO> GeefConfigInfoVanSimulatieAsync(int simulatie_id)
         {
-            return _simulatieManager.GeefStadKlantenDistributieVanSimulatie(simulatie_id);
+            return await _simulatieManager.GeefDetailedInfoVanSimulatieAsync(simulatie_id);
         }
 
-        public List<NaamMetAantalKlantedDTO> GeefNaamKlantenDistributieVanSimulatie(int simulatie_id)
+        public async Task<List<StadMetAantalKlantenDTO>> GeefStadKlantenDistributieVanSimulatieAsync(int simulatie_id)
         {
-            return _simulatieManager.GeefNaamKlantenDistributieVanSimulatie(simulatie_id);
+            return await _simulatieManager.GeefStadKlantenDistributieVanSimulatieAsync(simulatie_id);
         }
 
-        public KlantenDTO InfoOudsteKlant(int simulatie_id)
+        public async Task<List<NaamMetAantalKlantedDTO>> GeefKlantenDistributieVoornamenVanSimulatie(int simulatie_id, Geslacht geslacht)
         {
-            return _simulatieManager.InfoOudsteKlant(simulatie_id);
+            return await _simulatieManager.GeefKlantenDistributieVoornamenVanSimulatie(simulatie_id, geslacht);
         }
 
-        public KlantenDTO InfoJongsteKlant(int simulatie_id)
+        public async Task<List<NaamMetAantalKlantedDTO>> GeefKlantenDistributieAchternamenVanSimulatie(int simulatie_id)
         {
-            return _simulatieManager.InfoJongsteKlant(simulatie_id);
+            return await _simulatieManager.GeefKlantenDistributieAchternamenVanSimulatie(simulatie_id);
         }
 
+        public async Task<KlantDTO> InfoOudsteKlant(int simulatie_id)
+        {
+            return await _simulatieManager.InfoOudsteKlant(simulatie_id);
+        }
+
+        public async Task<KlantDTO> InfoJongsteKlant(int simulatie_id)
+        {
+            return await _simulatieManager.InfoJongsteKlant(simulatie_id);
+        }
+
+        public async Task ExportSimulatieMetaDataAlsText(int simulatie_id)
+        {
+            DetailedSimulatieDTO simdata = await GeefConfigInfoVanSimulatieAsync(simulatie_id);
+            List<StadMetAantalKlantenDTO> stedenDistributie = await GeefStadKlantenDistributieVanSimulatieAsync(simulatie_id);
+            List<NaamMetAantalKlantedDTO> AchterNamenDistributie = await GeefKlantenDistributieAchternamenVanSimulatie(simulatie_id);
+
+            List<NaamMetAantalKlantedDTO> VrouwenNamenDistributie = await GeefKlantenDistributieVoornamenVanSimulatie(simulatie_id, Geslacht.Vrouw);
+            List<NaamMetAantalKlantedDTO> mannenNamenDistributie = await GeefKlantenDistributieVoornamenVanSimulatie(simulatie_id, Geslacht.Man);
+            KlantDTO oudsteKlant = await InfoOudsteKlant(simulatie_id);
+            KlantDTO jongsteKlant = await InfoJongsteKlant(simulatie_id);
+            _klantenSimulatieExporter.ExportMetaDataAsText(simdata, stedenDistributie, VrouwenNamenDistributie, mannenNamenDistributie, AchterNamenDistributie, jongsteKlant, oudsteKlant);
+        }
+
+
+        public async Task ExportSimulatieMetaDataAlsJson(int simulatie_id) {
+            DetailedSimulatieDTO simdata = await GeefConfigInfoVanSimulatieAsync(simulatie_id);
+            List<StadMetAantalKlantenDTO> stedenDistributie = await GeefStadKlantenDistributieVanSimulatieAsync(simulatie_id);
+            List<NaamMetAantalKlantedDTO> AchterNamenDistributie = await GeefKlantenDistributieAchternamenVanSimulatie(simulatie_id);
+            List<NaamMetAantalKlantedDTO> VrouwenNamenDistributie = await GeefKlantenDistributieVoornamenVanSimulatie(simulatie_id,Geslacht.Vrouw);
+            List<NaamMetAantalKlantedDTO> mannenNamenDistributie = await GeefKlantenDistributieVoornamenVanSimulatie(simulatie_id, Geslacht.Man);
+            KlantDTO oudsteKlant = await InfoOudsteKlant(simulatie_id);
+            KlantDTO jongsteKlant = await InfoJongsteKlant(simulatie_id);
+            _klantenSimulatieExporter.ExportMetaDataAsJson(simdata, stedenDistributie, VrouwenNamenDistributie, mannenNamenDistributie, AchterNamenDistributie, jongsteKlant, oudsteKlant);
+        }
+
+        public async Task ExportSimulatieMetaDataAlsTextMetKlanten(int simulatie_id, char seperator)
+        {
+            DetailedSimulatieDTO simdata = await GeefConfigInfoVanSimulatieAsync(simulatie_id);
+            List<StadMetAantalKlantenDTO> stedenDistributie = await GeefStadKlantenDistributieVanSimulatieAsync(simulatie_id);
+            List<NaamMetAantalKlantedDTO> AchterNamenDistributie = await GeefKlantenDistributieAchternamenVanSimulatie(simulatie_id);
+
+            List<NaamMetAantalKlantedDTO> VrouwenNamenDistributie = await GeefKlantenDistributieVoornamenVanSimulatie(simulatie_id, Geslacht.Vrouw);
+            List<NaamMetAantalKlantedDTO> mannenNamenDistributie = await GeefKlantenDistributieVoornamenVanSimulatie(simulatie_id, Geslacht.Man);
+            KlantDTO oudsteKlant = await InfoOudsteKlant(simulatie_id);
+            KlantDTO jongsteKlant = await InfoJongsteKlant(simulatie_id);
+            List<Klant> klanten = await _simulatieManager.GeefKlanten(simulatie_id);
+            _klantenSimulatieExporter.ExportMetaDataEnKlantenAsText(seperator,klanten, simdata, stedenDistributie, VrouwenNamenDistributie, mannenNamenDistributie, AchterNamenDistributie, jongsteKlant, oudsteKlant);
+        }
 
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -24,29 +25,58 @@ namespace KlantenSimulatorDLDatabank
         }
 
 
-        public List<SimpeleSimulatieInfoDTO> GeefSimpeleInfoVanSimulaties()
+        public async Task<List<SimpeleSimulatieInfoDTO>> GeefSimpeleInfoVanSimulatiesAsync()
         {
             List<SimpeleSimulatieInfoDTO> ret = new();
-            const string sqlStatementZoekBedrijf = "select s.id as id, b.naam as opdrachtgever, ld.naam as dataset, l.naam as land, count(k.id) as hoeveel_klanten, ld.moment_aanmaak as simTime from simulaties s join bedrijven b on s.bedrijf_id=b.id join land_datasets ld on s.dataset_id=ld.id join landen l on ld.land_id = l.id left join simklanten k on k.simulatie_id=s.id group by  s.id,b.naam, ld.naam, l.naam, ld.moment_aanmaak;";
+            const string sqlStatementZoekBedrijf = "select s.id as id, b.naam as opdrachtgever, ld.naam as dataset, l.naam as land, count(k.id) as hoeveel_klanten, s.simulatie_tijd as simTime from simulaties s join bedrijven b on s.bedrijf_id=b.id join land_datasets ld on s.dataset_id=ld.id join landen l on ld.land_id = l.id left join simklanten k on k.simulatie_id=s.id group by  s.id,s.simulatie_tijd,b.naam, ld.naam, l.naam, ld.moment_aanmaak;";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
                 using (SqlCommand cmd = con.CreateCommand())
                 {
-                    cmd.CommandText= sqlStatementZoekBedrijf;
-                    IDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read()) {
-                        SimpeleSimulatieInfoDTO dto = new SimpeleSimulatieInfoDTO((int)reader["id"],(string)reader["opdrachtgever"], (int)reader["hoeveel_klanten"], (string)reader["dataset"], (string)reader["land"], (DateTime)reader["simTime"]);
-                        ret.Add(dto);
+                    cmd.CommandText = sqlStatementZoekBedrijf;
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            SimpeleSimulatieInfoDTO dto = new SimpeleSimulatieInfoDTO((int)reader["id"], (string)reader["opdrachtgever"], (int)reader["hoeveel_klanten"], (string)reader["dataset"], (string)reader["land"], (DateTime)reader["simTime"]);
+                            ret.Add(dto);
+                        }
+                        reader.Close();
                     }
-                    reader.Close();
                 }
                 }
             return ret;
         }
 
-        public void SaveKlantenSimulatie(Simulatie sim)
+
+        public async Task<SimpeleSimulatieInfoDTO> GeefSimpeleInfoVanSimulatie(int simulatie_id)
+        {
+            SimpeleSimulatieInfoDTO ret;
+            const string sqlStatementZoekBedrijf = "select s.id as id, b.naam as opdrachtgever, ld.naam as dataset, l.naam as land, count(k.id) as hoeveel_klanten, s.simulatie_tijd as simTime from simulaties s join bedrijven b on s.bedrijf_id=b.id join land_datasets ld on s.dataset_id=ld.id join landen l on ld.land_id = l.id left join simklanten k on k.simulatie_id=s.id where s.id=@simulatie_id group by  s.id,s.simulatie_tijd,b.naam, ld.naam, l.naam, ld.moment_aanmaak;";
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = sqlStatementZoekBedrijf;
+                    cmd.Parameters.AddWithValue("@simulatie_id", simulatie_id);
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
+
+                        ret = new SimpeleSimulatieInfoDTO((int)reader["id"], (string)reader["opdrachtgever"], (int)reader["hoeveel_klanten"], (string)reader["dataset"], (string)reader["land"], (DateTime)reader["simTime"]);
+                         
+                        
+                        reader.Close();
+                    }
+                }
+            }
+            return ret;
+        }
+        public async Task<int> SaveKlantenSimulatie(Simulatie sim)
         {
             const string sqlStatementZoekBedrijf = "select id from bedrijven where naam like @naam";
             const string sqlStatementSimulatie = "Insert into simulaties(dataset_id,bedrijf_id,simulatie_tijd,seed,kans_op_letter_in_huisnr,maximum_HuisNr,Aantal_Mogelijke_Letters_In_HuisNr,minimumleeftijd,maximumleeftijd) output INSERTED.ID values (@DatasetID,@BedrijfID,@simTime,@seed,@kansOpHuisNrLetter,@MaxHuisNr,@AantalHuisNrLetters,@minLeefrijd,@MaxLeeftijd)";
@@ -55,7 +85,7 @@ namespace KlantenSimulatorDLDatabank
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
                 SqlTransaction transaction = con.BeginTransaction();
                 try
                 {
@@ -66,12 +96,13 @@ namespace KlantenSimulatorDLDatabank
                         cmdZoekBedrijf.CommandText = sqlStatementZoekBedrijf;
                         cmdZoekBedrijf.Transaction = transaction;
                         cmdZoekBedrijf.Parameters.AddWithValue("@naam", sim.OpdrachtGever);
-                        IDataReader reader = cmdZoekBedrijf.ExecuteReader();
+                        using (DbDataReader reader = await cmdZoekBedrijf.ExecuteReaderAsync())
+                        {
+                            reader.ReadAsync();
 
-                        reader.Read();
-
-                        BedrijfId = (int)reader["id"];
-                        reader.Close();
+                            BedrijfId = (int)reader["id"];
+                        }
+                  
 
 
                     }
@@ -102,7 +133,7 @@ namespace KlantenSimulatorDLDatabank
                         {
                             cmdMaakSimStadLimitatie.Parameters.AddWithValue("@simulatieID", simulatieId);
                             cmdMaakSimStadLimitatie.Parameters.AddWithValue("@stadID", stad.Id);
-                            cmdMaakSimStadLimitatie.ExecuteNonQuery();
+                            await cmdMaakSimStadLimitatie.ExecuteNonQueryAsync();
                             cmdMaakSimStadLimitatie.Parameters.Clear();
                         }
                     }
@@ -131,7 +162,7 @@ namespace KlantenSimulatorDLDatabank
                         sqlKlantenCopy.ColumnMappings.Add("HuisNr", "HuisNr");
                         sqlKlantenCopy.ColumnMappings.Add("straat_id", "straat_id");
                         sqlKlantenCopy.DestinationTableName = "simklanten";
-                        sqlKlantenCopy.WriteToServer(klantenTabel);
+                        await sqlKlantenCopy.WriteToServerAsync(klantenTabel);
 
 
                     }
@@ -140,91 +171,99 @@ namespace KlantenSimulatorDLDatabank
 
 
 
-                    transaction.Commit();
+                   await transaction.CommitAsync();
+                    return simulatieId;
                 }
                 catch (Exception ex)
                 {
 
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                     throw ex;
                 }
-
+                
             }
         }
 
 
-        public DetailedSimulatieDTO GeefDetailedInfoVanSimulatie(int simulatie_id)
+        public async Task<DetailedSimulatieDTO> GeefDetailedInfoVanSimulatieAsync(int simulatie_id)
         {
             DetailedSimulatieDTO ret;
             const string sqlStatementStadLimitaties = "select s.naam from steden s join simulatie_stad_limitaties ssl on s.id=ssl.stad_id where ssl.simulatie_id=@simulatie_id";
-            const string sqlStatementRestData = "select s.id as id,\r\nb.naam as opdrachtgever,\r\nld.naam as dataset,\r\nl.naam as land,\r\ncount(k.id) as hoeveel_klanten,\r\nld.moment_aanmaak as simTime,\r\ns.seed as seed,\r\ns.minimumleeftijd as MinLeeftijd,\r\ns.maximumleeftijd as MaxLeeftijd,\r\ns.Aantal_Mogelijke_Letters_In_HuisNr as AantalMogelijkeLettersInHuisNr,\r\ns.kans_op_letter_in_huisnr as KansOpLettersInHuisNr,\r\nAVG(DATEDIFF(DAY, k.geboortedatum, s.simulatie_tijd)/ 365.2425)   as avgLeeftijdAanMaak,\r\nAVG(DATEDIFF(DAY, k.geboortedatum, GETDATE())/ 365.2425)  as avgLeeftijdNu\r\nfrom simulaties s \r\n\tjoin bedrijven b on s.bedrijf_id=b.id \r\n\tjoin land_datasets ld on s.dataset_id=ld.id \r\n\tjoin landen l on ld.land_id = l.id \r\n\tleft join simklanten k on k.simulatie_id=s.id \r\n    where s.id = @simulatie_id\r\n\tgroup by  s.id,b.naam, ld.naam, l.naam, ld.moment_aanmaak,s.seed,\r\ns.minimumleeftijd,\r\ns.maximumleeftijd,\r\ns.Aantal_Mogelijke_Letters_In_HuisNr,\r\ns.kans_op_letter_in_huisnr;";
-/*select s.id as id,
-b.naam as opdrachtgever,
-ld.naam as dataset,
-l.naam as land,
-count(k.id) as hoeveel_klanten,
-ld.moment_aanmaak as simTime,
-s.seed as seed,
-s.minimumleeftijd as MinLeeftijd,
-s.maximumleeftijd as MaxLeeftijd,
-s.Aantal_Mogelijke_Letters_In_HuisNr as AantalMogelijkeLettersInHuisNr,
-s.kans_op_letter_in_huisnr as KansOpLettersInHuisNr,
-AVG(DATEDIFF(DAY, k.geboortedatum, s.simulatie_tijd)/ 365.2425)   as avgLeeftijdAanMaak,
-AVG(DATEDIFF(DAY, k.geboortedatum, GETDATE())/ 365.2425)  as avgLeeftijdNu
-from simulaties s 
-	join bedrijven b on s.bedrijf_id=b.id 
-	join land_datasets ld on s.dataset_id=ld.id 
-	join landen l on ld.land_id = l.id 
-	left join simklanten k on k.simulatie_id=s.id 
-    where s.id = @simulatie_id
-	group by  s.id,b.naam, ld.naam, l.naam, ld.moment_aanmaak,s.seed,
-s.minimumleeftijd,
-s.maximumleeftijd,
-s.Aantal_Mogelijke_Letters_In_HuisNr,
-s.kans_op_letter_in_huisnr;
-*/
+            const string sqlStatementRestData = "select s.id as id,\r\n            b.naam as opdrachtgever,\r\n            ld.id as LandDatasetid,\r\n            ld.naam as dataset,\r\n            l.naam as land,\r\n            count(k.id) as hoeveel_klanten,\r\n            ld.moment_aanmaak as simTime,\r\n            s.seed as seed,\r\n            s.minimumleeftijd as MinLeeftijd,\r\n            s.maximumleeftijd as MaxLeeftijd,\r\n            s.Aantal_Mogelijke_Letters_In_HuisNr as AantalMogelijkeLettersInHuisNr,\r\n            s.kans_op_letter_in_huisnr as KansOpLettersInHuisNr,\r\n            AVG(DATEDIFF(DAY, k.geboortedatum, s.simulatie_tijd)/ 365.2425)   as avgLeeftijdAanMaak,\r\n            AVG(DATEDIFF(DAY, k.geboortedatum, GETDATE())/ 365.2425)  as avgLeeftijdNu\r\n            from simulaties s \r\n                join bedrijven b on s.bedrijf_id=b.id \r\n                join land_datasets ld on s.dataset_id=ld.id \r\n                join landen l on ld.land_id = l.id \r\n                left join simklanten k on k.simulatie_id=s.id \r\n                where s.id = @simulatie_id\r\n                group by  s.id,b.naam, ld.naam, l.naam, ld.moment_aanmaak,s.seed,\r\n            s.minimumleeftijd,\r\n            s.maximumleeftijd,\r\n            s.Aantal_Mogelijke_Letters_In_HuisNr,\r\n            s.kans_op_letter_in_huisnr\r\n            ,ld.id";
+            /*select s.id as id,
+            b.naam as opdrachtgever,
+            ld.id as LandDatasetid,
+            ld.naam as dataset,
+            l.naam as land,
+            count(k.id) as hoeveel_klanten,
+            ld.moment_aanmaak as simTime,
+            s.seed as seed,
+            s.minimumleeftijd as MinLeeftijd,
+            s.maximumleeftijd as MaxLeeftijd,
+            s.Aantal_Mogelijke_Letters_In_HuisNr as AantalMogelijkeLettersInHuisNr,
+            s.kans_op_letter_in_huisnr as KansOpLettersInHuisNr,
+            AVG(DATEDIFF(DAY, k.geboortedatum, s.simulatie_tijd)/ 365.2425)   as avgLeeftijdAanMaak,
+            AVG(DATEDIFF(DAY, k.geboortedatum, GETDATE())/ 365.2425)  as avgLeeftijdNu
+            from simulaties s 
+                join bedrijven b on s.bedrijf_id=b.id 
+                join land_datasets ld on s.dataset_id=ld.id 
+                join landen l on ld.land_id = l.id 
+                left join simklanten k on k.simulatie_id=s.id 
+                where s.id = @simulatie_id
+                group by  s.id,b.naam, ld.naam, l.naam, ld.moment_aanmaak,s.seed,
+            s.minimumleeftijd,
+            s.maximumleeftijd,
+            s.Aantal_Mogelijke_Letters_In_HuisNr,
+            s.kans_op_letter_in_huisnr
+            ,ld.id
+            */
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
                 List<string> LimitatieSteden=new();
                 using (SqlCommand cmdstadLimiet = con.CreateCommand())
                 {
                     cmdstadLimiet.CommandText = sqlStatementStadLimitaties;
                     cmdstadLimiet.Parameters.AddWithValue("@simulatie_id", simulatie_id);
-                    IDataReader reader = cmdstadLimiet.ExecuteReader();
-                    while (reader.Read())
+                    using (DbDataReader reader = await cmdstadLimiet.ExecuteReaderAsync())
                     {
-                        LimitatieSteden.Add(Convert.ToString(reader["naam"]));
+                        while (await reader.ReadAsync())
+                        {
+                            LimitatieSteden.Add(Convert.ToString(reader["naam"]));
+                        }
+                       
                     }
-                    reader.Close();
-                }
+                    }
 
                     using (SqlCommand cmd = con.CreateCommand())
                 {
                     cmd.CommandText = sqlStatementRestData;
                     cmd.Parameters.AddWithValue("@simulatie_id", simulatie_id);
-                    IDataReader reader = cmd.ExecuteReader(); 
-                    reader.Read();
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
 
-                    ret = new DetailedSimulatieDTO(
-                    Convert.ToInt32(reader["id"]),
-                    Convert.ToString(reader["opdrachtgever"]),
-                    Convert.ToInt32(reader["hoeveel_klanten"]),
-                    Convert.ToString(reader["dataset"]),
-                    Convert.ToString(reader["land"]),
-                    Convert.ToDateTime(reader["simTime"]),
-                    Convert.ToInt32(reader["seed"]),
-                    Convert.ToInt32(reader["MinLeeftijd"]),
-                    Convert.ToInt32(reader["MaxLeeftijd"]),
-                    Convert.ToInt32(reader["AantalMogelijkeLettersInHuisNr"]),
-                    Convert.ToSingle(reader["KansOpLettersInHuisNr"]),
-                    Convert.ToSingle(reader["avgLeeftijdAanMaak"]),
-                    Convert.ToSingle(reader["avgLeeftijdNu"]),
-                    LimitatieSteden
-                    ); 
+                        ret = new DetailedSimulatieDTO(
+                        Convert.ToInt32(reader["id"]),
+                          Convert.ToInt32(reader["LandDatasetid"]),
+                        Convert.ToString(reader["opdrachtgever"]),
+                        Convert.ToInt32(reader["hoeveel_klanten"]),
+                        Convert.ToString(reader["dataset"]),
+                        Convert.ToString(reader["land"]),
+                        Convert.ToDateTime(reader["simTime"]),
+                        Convert.ToInt32(reader["seed"]),
+                        Convert.ToInt32(reader["MinLeeftijd"]),
+                        Convert.ToInt32(reader["MaxLeeftijd"]),
+                        Convert.ToInt32(reader["AantalMogelijkeLettersInHuisNr"]),
+                        Convert.ToSingle(reader["KansOpLettersInHuisNr"]),
+                        Convert.ToSingle(reader["avgLeeftijdAanMaak"]),
+                        Convert.ToSingle(reader["avgLeeftijdNu"]),
+                        LimitatieSteden
+                        );
 
 
-                    reader.Close();
+                        reader.Close();
+                    }
                 }
             }
             return ret;
@@ -232,50 +271,99 @@ s.kans_op_letter_in_huisnr;
 
 
 
-        public List<StadMetAantalKlantenDTO> GeefStadKlantenDistributieVanSimulatie(int simulatie_id)
+        public async Task<List<StadMetAantalKlantenDTO>> GeefStadKlantenDistributieVanSimulatieAsync(int simulatie_id)
         {
             List<StadMetAantalKlantenDTO> ret = new();
             const string sqlStatement = "select ste.naam, COUNT(k.id) as klanten from straten stra join simklanten k on stra.id = k.straat_id join steden ste on stra.stad_id = ste.id where k.simulatie_id=@simulatie_id group by ste.naam;";
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
                 using (SqlCommand cmd = con.CreateCommand())
                 {
                     cmd.CommandText = sqlStatement;
                     cmd.Parameters.AddWithValue("@simulatie_id", simulatie_id);
-                    IDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
                     {
-                        StadMetAantalKlantenDTO dto = new(Convert.ToString(reader["naam"]), Convert.ToInt32(reader["klanten"]));
-                        ret.Add(dto);
+                        while (await reader.ReadAsync())
+                        {
+                            StadMetAantalKlantenDTO dto = new(Convert.ToString(reader["naam"]), Convert.ToInt32(reader["klanten"]));
+                            ret.Add(dto);
+                        }
+                        reader.Close();
                     }
-                    reader.Close();
                 }
             }
             return ret;
         }
 
-        public List<NaamMetAantalKlantedDTO> GeefNaamKlantenDistributieVanSimulatie(int simulatie_id)
+        public async Task<List<NaamMetAantalKlantedDTO>> GeefKlantenDistributieVoornamenVanSimulatie(int simulatie_id,Geslacht geslacht)
         {
             List<NaamMetAantalKlantedDTO> ret = new();
-            const string sqlStatement = "select k.voornaam as naam, @voornaam as naam_type, count(k.id) as klanten from simklanten k where k.simulatie_id=@simulatie_id group by k.voornaam union select k2.achternaam as naam, @achternaam as naam_type, count(k2.id) as klanten from simklanten k2 where k2.simulatie_id=@simulatie_id group by k2.achternaam;";
+            const string sqlStatement = "select k.voornaam as naam,\r\ncount(k.id) as klanten\r\nfrom simklanten k \r\nwhere k.simulatie_id=@simulatie_id and k.geslacht=@geslachtchar\r\ngroup by k.voornaam;";
+            /*
+             select k.voornaam as naam,
+count(k.id) as klanten
+from simklanten k 
+where k.simulatie_id=@simulatie_id and k.geslacht=@geslachtchar
+group by k.voornaam;
+             */
+
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
                 using (SqlCommand cmd = con.CreateCommand())
                 {
+                    
                     cmd.CommandText = sqlStatement;
                     cmd.Parameters.AddWithValue("@simulatie_id", simulatie_id);
-                    cmd.Parameters.AddWithValue("@voornaam", NaamSoort.Voornaam.ToString());
-                    cmd.Parameters.AddWithValue("@achternaam", NaamSoort.AchterNaam.ToString());
-                    IDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    char geslachtChar = geslacht.ToString()[0];
+                    cmd.Parameters.AddWithValue("@geslachtchar", geslachtChar);
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
                     {
-                        NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort), (string)reader["naam_type"]);
-                        NaamMetAantalKlantedDTO dto = new(Convert.ToString(reader["naam"]), naamsoort, Convert.ToInt32(reader["klanten"]));
-                        ret.Add(dto);
+                        while (await reader.ReadAsync())
+                        {
+                          //  NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort), (string)reader["naam_type"]);
+                            NaamMetAantalKlantedDTO dto = new(Convert.ToString(reader["naam"]), Convert.ToInt32(reader["klanten"]));
+                            ret.Add(dto);
+                        }
+                       
                     }
-                    reader.Close();
+                }
+            }
+            return ret;
+        }
+
+        public async Task<List<NaamMetAantalKlantedDTO>> GeefKlantenDistributieAchternamenVanSimulatie(int simulatie_id)
+        {
+            List<NaamMetAantalKlantedDTO> ret = new();
+            const string sqlStatement = "select k.achternaam as naam,\r\ncount(k.id) as klanten\r\nfrom simklanten k \r\nwhere k.simulatie_id=@simulatie_id\r\ngroup by k.achternaam;";
+                /*
+             select k.achternaam as naam,
+count(k.id) as klanten
+from simklanten k 
+where k.simulatie_id=@simulatie_id
+group by k.achternaam;
+             */
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = con.CreateCommand())
+                {
+
+                    cmd.CommandText = sqlStatement;
+                    cmd.Parameters.AddWithValue("@simulatie_id", simulatie_id);
+                   
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            //  NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort), (string)reader["naam_type"]);
+                            NaamMetAantalKlantedDTO dto = new(Convert.ToString(reader["naam"]), Convert.ToInt32(reader["klanten"]));
+                            ret.Add(dto);
+                        }
+
+                    }
                 }
             }
             return ret;
@@ -293,9 +381,9 @@ s.kans_op_letter_in_huisnr;
 
         }
 
-        public KlantenDTO InfoJongsteKlant(int simulatie_id)
+        public async Task<KlantDTO> InfoJongsteKlant(int simulatie_id)
         {
-            KlantenDTO ret;
+            KlantDTO ret;
 
             const string sqlStatement = "select TOP 1 k.geslacht as geslacht, \r\nk.Voornaam as Voornaam,\r\nk.achternaam as Achternaam,\r\nstra.naam as Straat,\r\nste.naam as Stad,\r\nl.naam as Land,\r\nk.huisNr as HuisNr,\r\nk.geboorteDatum as geboorteDatum\r\nfrom simklanten k \r\njoin straten stra on k.straat_id=stra.id\r\njoin steden ste on stra.stad_id=ste.id\r\njoin land_datasets d on ste.dataset_id = d.id\r\njoin landen l on d.land_id=l.id\r\nwhere k.simulatie_id = @simulatie_id\r\norder by geboortedatum desc"; 
                 /*
@@ -318,27 +406,30 @@ order by geboortedatum desc
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
                 using (SqlCommand cmd = con.CreateCommand())
                 {
                     cmd.CommandText = sqlStatement;
                     cmd.Parameters.AddWithValue("@simulatie_id", simulatie_id);
-                    IDataReader reader = cmd.ExecuteReader();
-                    reader.Read();
-                    Geslacht geslacht = CharTogeslacht(Convert.ToChar(reader["geslacht"]));
-                    ret = new KlantenDTO(Convert.ToString(reader["Voornaam"]), Convert.ToString(reader["Achternaam"]),geslacht,
-                        Convert.ToString(reader["HuisNr"]), Convert.ToString(reader["Straat"]), Convert.ToString(reader["Stad"]), Convert.ToString(reader["Land"]), Convert.ToDateTime(reader["geboorteDatum"]));
-                       
-                    reader.Close();
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
+                        Geslacht geslacht = CharTogeslacht(Convert.ToChar(reader["geslacht"]));
+                        ret = new KlantDTO(Convert.ToString(reader["Voornaam"]), Convert.ToString(reader["Achternaam"]), geslacht,
+                            Convert.ToString(reader["HuisNr"]), Convert.ToString(reader["Straat"]), Convert.ToString(reader["Stad"]), Convert.ToString(reader["Land"]), Convert.ToDateTime(reader["geboorteDatum"]));
+
+                        reader.Close();
+
+                    }
                 }
             }
 
             return ret;
         }
 
-        public KlantenDTO InfoOudsteKlant(int simulatie_id)
+        public async Task<KlantDTO> InfoOudsteKlant(int simulatie_id)
         {
-            KlantenDTO ret;
+            KlantDTO ret;
 
             const string sqlStatement = "select TOP 1 k.geslacht as geslacht, \r\nk.Voornaam as Voornaam,\r\nk.achternaam as Achternaam,\r\nstra.naam as Straat,\r\nste.naam as Stad,\r\nl.naam as Land,\r\nk.huisNr as HuisNr,\r\nk.geboorteDatum as geboorteDatum\r\nfrom simklanten k \r\njoin straten stra on k.straat_id=stra.id\r\njoin steden ste on stra.stad_id=ste.id\r\njoin land_datasets d on ste.dataset_id = d.id\r\njoin landen l on d.land_id=l.id\r\nwhere k.simulatie_id = @simulatie_id\r\norder by geboortedatum asc";
             /*
@@ -361,24 +452,122 @@ order by geboortedatum asc
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
                 using (SqlCommand cmd = con.CreateCommand())
                 {
                     cmd.CommandText = sqlStatement;
                     cmd.Parameters.AddWithValue("@simulatie_id", simulatie_id);
-                    IDataReader reader = cmd.ExecuteReader();
-                    reader.Read();
-                    Geslacht geslacht = CharTogeslacht(Convert.ToChar(reader["geslacht"]));
-                    ret = new KlantenDTO(Convert.ToString(reader["Voornaam"]), Convert.ToString(reader["Achternaam"]), geslacht,
-                        Convert.ToString(reader["HuisNr"]), Convert.ToString(reader["Straat"]), Convert.ToString(reader["Stad"]), Convert.ToString(reader["Land"]), Convert.ToDateTime(reader["geboorteDatum"]));
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
+                        Geslacht geslacht = CharTogeslacht(Convert.ToChar(reader["geslacht"]));
+                        ret = new KlantDTO(Convert.ToString(reader["Voornaam"]), Convert.ToString(reader["Achternaam"]), geslacht,
+                            Convert.ToString(reader["HuisNr"]), Convert.ToString(reader["Straat"]), Convert.ToString(reader["Stad"]), Convert.ToString(reader["Land"]), Convert.ToDateTime(reader["geboorteDatum"]));
 
-                    reader.Close();
+                        reader.Close();
+
+                    }
                 }
             }
 
             return ret;
         }
 
+
+        public async Task<List<Klant>> GeefKlanten(int simulatie_id)
+        {
+            List<Klant> ret = new();
+            Land land;
+            const string sqlLandCmd = "select l.id,l.naam from landen l\r\njoin land_datasets d on d.land_id = l.id\r\njoin simulaties s on s.dataset_id=d.id\r\nwhere s.id = @simulatie_id;";
+        /*
+select l.id,l.naam from landen l
+join land_datasets d on d.land_id = l.id
+join simulaties s on s.dataset_id=d.id
+where s.id = @simulatie_id;
+        */
+           const string sqlKlandCmd = " select k.id as id\r\n,k.voornaam as voornaam\r\n,k.achternaam as achternaam\r\n,k.geboortedatum as geboortedatum\r\n,k.geslacht as geslacht\r\n,k.HuisNr as huisNr, \r\nsra.id as straatId,\r\nsra.naam as straatnaam,\r\nste.id as stadId,\r\nste.naam as stadnaam\r\nfrom simklanten k\r\njoin straten sra on sra.id=straat_id \r\njoin steden ste on sra.stad_id=ste.id\r\nwhere k.simulatie_id = @simulatie_id;";
+                /*
+             select k.id as id
+,k.voornaam as voornaam
+,k.achternaam as achternaam
+,k.geboortedatum as geboortedatum
+,k.geslacht as geslacht
+,k.HuisNr as huisNr, 
+sra.id as straatId,
+sra.naam as straatnaam,
+ste.id as stadId,
+ste.naam as stadnaam
+from simklanten k
+join straten sra on sra.id=straat_id 
+join steden ste on sra.stad_id=ste.id
+where k.simulatie_id = @simulatie_id;
+             */
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = sqlLandCmd;
+                    cmd.Parameters.AddWithValue("@simulatie_id", simulatie_id);
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
+
+                        land = new(Convert.ToInt32(reader["id"]), Convert.ToString(reader["naam"]));
+                    }
+                }
+
+                using (SqlCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = sqlKlandCmd;
+                    cmd.Parameters.AddWithValue("@simulatie_id", simulatie_id);
+                    Dictionary<int, Stad> steden = new();
+                    Dictionary<int, Straat> straten = new();
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while(await reader.ReadAsync())
+                        {
+                            int id = Convert.ToInt32(reader["id"]);
+                            string voornaam = Convert.ToString(reader["voornaam"]);
+                            string achternaam = Convert.ToString(reader["achternaam"]);
+                            DateTime geboortedatum = Convert.ToDateTime(reader["geboortedatum"]);
+                            string huisNr = Convert.ToString(reader["huisNr"]);
+                            int straatId = Convert.ToInt32(reader["straatId"]);
+                            Geslacht geslacht = CharTogeslacht(Convert.ToChar(reader["geslacht"]));
+                            Straat straat;
+                            Klant klant;
+                            if (!straten.TryGetValue(straatId,out straat))
+                            {
+                                string straatnaam = Convert.ToString(reader["straatnaam"]);
+                                int stadId = Convert.ToInt32(reader["stadId"]);
+                                Stad stad;
+                                if (!steden.TryGetValue(stadId, out stad))
+                                {
+                                    string stadnaam = Convert.ToString(reader["stadnaam"]);
+                                    stad = new(stadId, land, stadnaam);
+                                    steden.Add(stadId,stad);
+                                }
+
+                                straat = new(straatId, stad, straatnaam);
+                                straten.Add(straatId, straat);
+
+                            }
+                            Adress adress = new Adress(huisNr, straat);
+                            klant = new(id, voornaam, achternaam, adress, geslacht, geboortedatum);
+
+
+
+
+                            ret.Add( klant);
+                        }
+
+                        
+                    }
+                }
+                return ret;
+            }
+        }
 
 
 

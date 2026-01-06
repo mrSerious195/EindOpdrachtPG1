@@ -1,0 +1,23 @@
+﻿<Window x:Class="KlantenSimulatorGUI.ExportWithKlantenWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KlantenSimulatorGUI"
+        mc:Ignorable="d"
+        Title="ExportWithKlantenWindow" Height="100" Width="250">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Select a seperation character"/>
+        <TextBox Name="charbox" TextWrapping="Wrap" MaxLength="1" Text=";" Grid.Column="1"/>
+        <Button Content="Export" Click="Export" Grid.Column="0" Grid.Row="1"  Grid.ColumnSpan="2"/>
+
+    </Grid>
+</Window>

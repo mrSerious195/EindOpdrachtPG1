@@ -28,17 +28,25 @@ namespace KlantenSimulatorGUI
 
         private ObservableCollection<StadDTO> _nietGeselecteerdeSteden;
         private ObservableCollection<StadDTO> _geselecteerdeSteden;
-        public NieuweKlantenSimulatieWindow(SimulatieService simulatieService)
+
+        ObservableCollection<SimpeleSimulatieInfoDTO> _alleSimulaties;
+        public NieuweKlantenSimulatieWindow(SimulatieService simulatieService, ObservableCollection<SimpeleSimulatieInfoDTO> alleSimulaties)
         {
             InitializeComponent();
             _simService=simulatieService;
-            _alleopdrachtgevers = new(_simService.GeefAlleOpdrachtGevers());
+            _alleSimulaties=alleSimulaties;
+            AddDataAsync();
+        }
+
+        private async void AddDataAsync()
+        {
+            _alleopdrachtgevers = new(await _simService.GeefAlleOpdrachtGeversAsync());
             OpdrachtgeverBox.ItemsSource = _alleopdrachtgevers;
             OpdrachtgeverBox.SelectedIndex = 0;
-            DatasetBox.ItemsSource = _simService.GeefSimpeleDataSetInfo();
+            DatasetBox.ItemsSource = await _simService.GeefSimpeleDataSetInfoAsync();
             DatasetBox.SelectedIndex = 0;
             int currentDatasetId = ((SimpeleLandDataSetDTO)DatasetBox.SelectedValue).DataSetID;
-            _nietGeselecteerdeSteden = new(_simService.GeefInfoSteden(currentDatasetId));
+            _nietGeselecteerdeSteden = new(await _simService.GeefInfoStedenAsync(currentDatasetId));
             _geselecteerdeSteden = new();
             _geselecteerdeSteden.CollectionChanged += SelectedStedenChanged;
         }
@@ -46,6 +54,13 @@ namespace KlantenSimulatorGUI
         public void NieuweOpdrachtGever(object sender, RoutedEventArgs e)
         {
             var window = new NewOpdrachtgeverWindow(_simService, _alleopdrachtgevers);
+            window.Show();
+        }
+
+
+        public void ExtraInfoDataset(object sender, RoutedEventArgs e)
+        {
+            var window = new LandDatasetInfo(_simService, ((SimpeleLandDataSetDTO)DatasetBox.SelectedValue).DataSetID);
             window.Show();
         }
 
@@ -63,14 +78,14 @@ namespace KlantenSimulatorGUI
             }
         }
 
-        public void DatasetBoxChanged(object sender, SelectionChangedEventArgs e )
+        public async void DatasetBoxChanged(object sender, SelectionChangedEventArgs e )
         {
             if (_nietGeselecteerdeSteden != null)
             {
                 _nietGeselecteerdeSteden.Clear();
                 _geselecteerdeSteden.Clear();
                 int nieuwDateSetID = ((SimpeleLandDataSetDTO)DatasetBox.SelectedValue).DataSetID;
-                List<StadDTO> steden = _simService.GeefInfoSteden(nieuwDateSetID);
+                List<StadDTO> steden = await _simService.GeefInfoStedenAsync(nieuwDateSetID);
                 foreach (StadDTO stad in steden)
                 {
                     _nietGeselecteerdeSteden.Add(stad);
@@ -112,7 +127,7 @@ namespace KlantenSimulatorGUI
             }
         }
 
-        public void GenerateNewKlantenset(object sender, RoutedEventArgs e)
+        public async void GenerateNewKlantenset(object sender, RoutedEventArgs e)
         {
             int seed = int.Parse(SeedBox.Text);
             int aantalKlanten = int.Parse(AantalKlantenBox.Text);
@@ -127,7 +142,10 @@ namespace KlantenSimulatorGUI
             string opdrachtgever = (string)OpdrachtgeverBox.SelectedValue;
 
             SimulatieSetupDataDTO data = new(seed, landDatasetId,minimumLeeftijd,maximumLeeftijd,maximumHuisNr,aantalMogelijkeLettersInHuisNr, aantalKlanten,kansVoorHuisNrMetLetter,opdrachtgever,gelimiteerdTotStedenStadIDs);
-            _simService.genereerSimulatie(data);
+            SimpeleSimulatieInfoDTO newsim =  await _simService.genereerSimulatieAsync(data);
+            _alleSimulaties.Add(newsim);
+            MessageBox.Show("Finished Generating");
+            this.Close();
         }
 
        

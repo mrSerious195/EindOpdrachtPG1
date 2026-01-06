@@ -22,7 +22,7 @@ namespace KlantenSimulatorBL.Domein
                 }
                 else
                 {
-                    throw new ArgumentException($"Simulatie.DatasetID: {value} is invalid");
+                    throw new KlantenException($"Simulatie.DatasetID: {value} is invalid");
                 }
             }
         }
@@ -36,7 +36,7 @@ namespace KlantenSimulatorBL.Domein
                 }
                 else
                 {
-                    throw new ArgumentException($"Simulatie.Id: {value} is invalid");
+                    throw new KlantenException($"Simulatie.Id: {value} is invalid");
                 } 
             } 
         }
@@ -55,7 +55,7 @@ namespace KlantenSimulatorBL.Domein
                 }
                 else
                 {
-                    throw new ArgumentException($"Simulatie.Id: {value} is invalid");
+                    throw new KlantenException($"Simulatie.Id: {value} is invalid");
                 }
             }
         }
@@ -72,7 +72,7 @@ namespace KlantenSimulatorBL.Domein
                 }
                 else
                 {
-                    throw new ArgumentException($"Simulatie.AantalMogelijkeLettersInHuisNr: {value} is invalid");
+                    throw new KlantenException($"Simulatie.AantalMogelijkeLettersInHuisNr: {value} is invalid");
                 }
                     
             }
@@ -90,7 +90,7 @@ namespace KlantenSimulatorBL.Domein
                 }
                 else
                 {
-                    throw new ArgumentException($"Simulatie.MaxHuisnummer: {value} is invalid");
+                    throw new KlantenException($"Simulatie.MaxHuisnummer: {value} is invalid");
                 }
 
             }
@@ -118,7 +118,7 @@ namespace KlantenSimulatorBL.Domein
             Id = id;
             if (land == null)
             {
-                throw new ArgumentException("Simulatie.Land Land is null");
+                throw new KlantenException("Simulatie.Land Land is null");
             }
             Land = land;
             MinimumLeeftijd = minimumLeeftijd;
@@ -127,12 +127,12 @@ namespace KlantenSimulatorBL.Domein
             PercentageAdressenMetNummers = percentageAdressenMetNummers;
             if (limitatieTotSteden == null)
             {
-                throw new ArgumentException("Simulatie.limitatieTotSteden limitatieTotSteden is null");
+                throw new KlantenException("Simulatie.limitatieTotSteden limitatieTotSteden is null");
 
             }
             if (limitatieTotSteden.Contains(null))
                 {
-                    throw new ArgumentException("Simulatie.limitatieTotSteden limitatieTotSteden contains null");
+                    throw new KlantenException("Simulatie.limitatieTotSteden limitatieTotSteden contains null");
                 }
                 _limitatieTotSteden = limitatieTotSteden;
             AantalMogelijkeLettersInHuisNr = aantalMogelijkeLettersInHuisNr;
@@ -140,12 +140,12 @@ namespace KlantenSimulatorBL.Domein
             OpdrachtGever = opdrachtGever;
             if (klanten == null)
             {
-                throw new ArgumentException("Simulatie.klanten klanten is null");
+                throw new KlantenException("Simulatie.klanten klanten is null");
 
             }
             if (klanten.Contains(null))
             {
-                throw new ArgumentException("Simulatie.klanten klanten contains null");
+                throw new KlantenException("Simulatie.klanten klanten contains null");
             }
             _klanten = klanten;
         }

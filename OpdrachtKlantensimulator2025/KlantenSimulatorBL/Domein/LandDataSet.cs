@@ -8,32 +8,37 @@ namespace KlantenSimulatorBL.Domein
 {
     public class LandDataSet
     {
-        public int? Id;
+        public int? Id { get; set; }
 
-        public Land Land;
+        public Land Land { get; set; }
 
-        public string NaamDataSet;
+        public string NaamDataSet { get; set; }
 
-        public bool ZijnAchternamenVMHetzelfde;
-        public List<NaamInfo> VoornamenM;
+        public bool ZijnAchternamenVMHetzelfde { get; set; }
 
-        public List<NaamInfo> VoornamenV;
+        private List<NaamInfo> _voornamenM;
 
-        public List<NaamInfo> AchternamenM;
+        public IReadOnlyList<NaamInfo> VoornamenM { get=> _voornamenM; }
 
-        public List<NaamInfo> AchternamenV;
+        private List<NaamInfo> _voornamenV;
+        public IReadOnlyList<NaamInfo> VoornamenV { get=> _voornamenV;  }
 
-        public List<Straat> Straten;
+        private List<NaamInfo> _achternamenM;
+        public IReadOnlyList<NaamInfo> AchternamenM { get=> _achternamenM;  }
+        private List<NaamInfo> _achternamenV;
+        public IReadOnlyList<NaamInfo> AchternamenV { get=> _achternamenV;  }
+        private List<Straat> _straten;
+        public IReadOnlyList<Straat> Straten { get=> _straten; }
 
         public LandDataSet(bool zijnAchternamenVMHetzelfde,string naamDataSet,Land land, List<NaamInfo> voornamenM, List<NaamInfo> voornamenV, List<NaamInfo> achternamenM, List<NaamInfo> achternamenV, List<Straat> straten)
         {
             ZijnAchternamenVMHetzelfde = zijnAchternamenVMHetzelfde;
             Land =land;
-            VoornamenM = voornamenM;
-            VoornamenV = voornamenV;
-            AchternamenM = achternamenM;
-            AchternamenV = achternamenV;
-            Straten = straten;
+            _voornamenM = voornamenM;
+            _voornamenV = voornamenV;
+            _achternamenM = achternamenM;
+            _achternamenV = achternamenV;
+            _straten = straten;
             NaamDataSet = naamDataSet;
         }
         public LandDataSet(int id,bool zijnAchternamenVMHetzelfde, string naamDataSet, Land land, List<NaamInfo> voornamenM, List<NaamInfo> voornamenV, List<NaamInfo> achternamenM, List<NaamInfo> achternamenV, List<Straat> straten)
@@ -41,11 +46,11 @@ namespace KlantenSimulatorBL.Domein
             Id = id;
             ZijnAchternamenVMHetzelfde = zijnAchternamenVMHetzelfde;
             Land = land;
-            VoornamenM = voornamenM;
-            VoornamenV = voornamenV;
-            AchternamenM = achternamenM;
-            AchternamenV = achternamenV;
-            Straten = straten;
+            _voornamenM = voornamenM;
+            _voornamenV = voornamenV;
+            _achternamenM = achternamenM;
+            _achternamenV = achternamenV;
+            _straten = straten;
             NaamDataSet = naamDataSet;
         }
     }

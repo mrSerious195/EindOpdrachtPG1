@@ -5,14 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KlantenSimulatorInitialisationUtils.DTO
+namespace KlantenSimulatorInitialisationUtils.DTO.NaamConstructerInfo
 {
     public class ConstructorNaamTextLezerDTO : IConstructorNaamLezerDTO
     {
-        public ConstructorNaamTextLezerDTO(string path, GramaticaalGeslacht geslacht, NaamSoort naamSoort, int naamColom, int frequencyColom, int starterRij,char seperator)
+        public ConstructorNaamTextLezerDTO(string path, int naamColom, int frequencyColom, int starterRij,char seperator)
         {
-            Geslacht = geslacht;
-            NaamSoort = naamSoort;
+
             NaamColom = naamColom;
             FrequencyColom = frequencyColom;
             StarterRij = starterRij;
@@ -20,8 +19,7 @@ namespace KlantenSimulatorInitialisationUtils.DTO
             Path = path;
         }
 
-        public GramaticaalGeslacht Geslacht { get; set; }
-        public NaamSoort NaamSoort { get; set; }
+
 
         public int NaamColom { get; set; }
         public string Path { get; set; }
@@ -32,7 +30,7 @@ namespace KlantenSimulatorInitialisationUtils.DTO
 
         public object Clone()
         {
-           return new ConstructorNaamTextLezerDTO(Path,Geslacht, NaamSoort, NaamColom, FrequencyColom, StarterRij, Seperator);
+           return new ConstructorNaamTextLezerDTO(Path, NaamColom, FrequencyColom, StarterRij, Seperator);
         }
     }
 }

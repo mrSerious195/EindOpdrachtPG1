@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,40 +18,42 @@ namespace KlantenSimulatorDLDatabank
         {
             _connectionString = connectionString;
         }
-        public List<string> GeefAlleOpdrachtGevers()
+        public async Task<List<string>> GeefAlleOpdrachtGevers()
         {
             const string sqlStatementZoekOpdrachtGevers = "select b.naam from bedrijven b ";
 
             List<string> ret = new();
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+                await con.OpenAsync();
                 using (SqlCommand cmd = con.CreateCommand())
                 {
                     cmd.CommandText = sqlStatementZoekOpdrachtGevers;
-                    IDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
                     {
-                        ret.Add((string)reader["naam"]);
+                        while (await reader.ReadAsync())
+                        {
+                            ret.Add((string)reader["naam"]);
+                        }
+                        reader.Close();
                     }
-                    reader.Close();
+                    }
                 }
-            }
             return ret;
         }
-        public void VoegOpdrachtGeverToe(string naam)
+        public async Task VoegOpdrachtGeverToe(string naam)
         {
             const string sqlStatement = "insert into bedrijven (naam) values (@naam)";
 
             List<string> ret = new();
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+               await con.OpenAsync();
                 using (SqlCommand cmd = con.CreateCommand())
                 {
                     cmd.CommandText = sqlStatement;
                     cmd.Parameters.AddWithValue("@naam", naam);
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
            

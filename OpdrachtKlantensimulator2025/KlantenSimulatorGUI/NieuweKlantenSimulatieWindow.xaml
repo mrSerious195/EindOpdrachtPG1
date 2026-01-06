@@ -23,7 +23,7 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="auto" MinWidth="50"/>
         </Grid.ColumnDefinitions>
         <Label Content="OpdrachtGever" Grid.Row="0" Grid.Column="0"/>
         <ComboBox Name="OpdrachtgeverBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"/>
@@ -31,9 +31,9 @@
         <Label Content="Dataset" Grid.Row="1" Grid.Column="0"/>
         <ComboBox SelectionChanged="DatasetBoxChanged" Grid.Row="1" Name="DatasetBox" Grid.Column="1" Grid.ColumnSpan="2"/>
         <Label Content="MinimumLeeftijd" Grid.Row="2" Grid.Column="0"/>
-        <TextBox Name="MinimumLeeftijdBox" TextWrapping="Wrap" Text="TextBlock" Grid.Row="2" Grid.Column="1"/>
+        <TextBox Name="MinimumLeeftijdBox" TextWrapping="Wrap" Text="18" Grid.Row="2" Grid.Column="1"/>
         <Label Content="MaximumLeeftijd" Grid.Row="2" Grid.Column="2"/>
-        <TextBox Name="MaximumLeeftijdBox" TextWrapping="Wrap" Text="TextBlock" Grid.Row="2" Grid.Column="3"/>
+        <TextBox Name="MaximumLeeftijdBox" TextWrapping="Wrap" Text="80" Grid.Row="2" Grid.Column="3"/>
         <Label Content="Kans op een letter in huisnummer" Grid.Row="3" Grid.Column="0"/>
         <Slider Name="KansOpLetterSlider" ValueChanged="KansOpLetterChanged" Value="0" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" AutoToolTipPrecision="2" IsSnapToTickEnabled="False" Maximum="1" TickPlacement="BottomRight"/>
         <Label Name="HuisNummerKansLabel" Content="0" Grid.Row="3" Grid.Column="4"/>
@@ -44,14 +44,15 @@
 
 
         <Label Content="Maximum grote huisnummers" Grid.Row="5" Grid.Column="0"/>
-        <TextBox Name="MaxHuisNrBox" TextWrapping="Wrap" Text="TextBlock" Grid.Row="5" Grid.Column="1"/>
+        <TextBox Name="MaxHuisNrBox" TextWrapping="Wrap" Text="100" Grid.Row="5" Grid.Column="1"/>
         <Label Content="Aantal klanten" Grid.Row="6" Grid.Column="0"/>
-        <TextBox Name="AantalKlantenBox" TextWrapping="Wrap" Text="TextBlock" Grid.Row="6" Grid.Column="1"/>
+        <TextBox Name="AantalKlantenBox" TextWrapping="Wrap" Text="2000" Grid.Row="6" Grid.Column="1"/>
         <Label Content="seed" Grid.Row="7" Grid.Column="0"/>
-        <TextBox Name="SeedBox" TextWrapping="Wrap" Text="TextBlock" Grid.Row="7" Grid.Column="1"/>
+        <TextBox Name="SeedBox" TextWrapping="Wrap" Text="1" Grid.Row="7" Grid.Column="1"/>
         <Label Content="Gelimiteerd tot Steden" Grid.Row="8" Grid.Column="0"/>
         <Button Click="OpenStedenSelectie" Content="Selecteer steden" Grid.Row="8" Grid.Column="1"/>
         <Label Name="StedenLabel" Content="Geen steden geselecteerd" Grid.Row="8" Grid.Column="2"/>
         <Button Click="GenerateNewKlantenset" Content="Generate" Grid.Row="9" Grid.ColumnSpan="4"/>
+        <Button Content="&gt;&gt;" Click="ExtraInfoDataset" Grid.Row="1" Grid.Column="3"/>
     </Grid>
 </Window>

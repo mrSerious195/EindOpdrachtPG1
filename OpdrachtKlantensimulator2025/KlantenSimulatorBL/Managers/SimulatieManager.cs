@@ -1,5 +1,6 @@
 ﻿using KlantenSimulatorBL.Domein;
 using KlantenSimulatorBL.DTO;
+using KlantenSimulatorBL.Enums;
 using KlantenSimulatorBL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,39 +18,56 @@ namespace KlantenSimulatorBL.Managers
 
         }
 
-        public void SaveSimulatie(Simulatie sim)
+        public async Task<int> SaveSimulatie(Simulatie sim)
         {
-            _repo.SaveKlantenSimulatie(sim);
+            return await _repo.SaveKlantenSimulatie(sim);
         }
 
-        public List<SimpeleSimulatieInfoDTO> GeefSimpeleInfoVanSimulaties()
+        public async Task<List<SimpeleSimulatieInfoDTO>> GeefSimpeleInfoVanSimulatiesAsync()
         {
-            return _repo.GeefSimpeleInfoVanSimulaties();
+            return await _repo.GeefSimpeleInfoVanSimulatiesAsync();
         }
 
-        public DetailedSimulatieDTO GeefDetailedInfoVanSimulatie(int simulatie_id)
+        public async Task<SimpeleSimulatieInfoDTO> GeefSimpeleInfoVanSimulatieAsync(int simulatie_id)
         {
-            return _repo.GeefDetailedInfoVanSimulatie(simulatie_id);
+            return await _repo.GeefSimpeleInfoVanSimulatie(simulatie_id);
         }
 
-        public List<StadMetAantalKlantenDTO> GeefStadKlantenDistributieVanSimulatie(int simulatie_id)
+        public async Task<DetailedSimulatieDTO> GeefDetailedInfoVanSimulatieAsync(int simulatie_id)
         {
-            return _repo.GeefStadKlantenDistributieVanSimulatie(simulatie_id);
+            return await _repo.GeefDetailedInfoVanSimulatieAsync(simulatie_id);
         }
 
-        public List<NaamMetAantalKlantedDTO> GeefNaamKlantenDistributieVanSimulatie(int simulatie_id)
+        public async Task<List<StadMetAantalKlantenDTO>> GeefStadKlantenDistributieVanSimulatieAsync(int simulatie_id)
         {
-            return _repo.GeefNaamKlantenDistributieVanSimulatie(simulatie_id);
+            return await _repo.GeefStadKlantenDistributieVanSimulatieAsync(simulatie_id);
         }
 
-        public KlantenDTO InfoOudsteKlant(int simulatie_id)
+        public async Task<List<NaamMetAantalKlantedDTO>> GeefKlantenDistributieVoornamenVanSimulatie(int simulatie_id,Geslacht geslacht)
         {
-            return _repo.InfoOudsteKlant(simulatie_id);
+            return await _repo.GeefKlantenDistributieVoornamenVanSimulatie(simulatie_id, geslacht);
         }
 
-        public KlantenDTO InfoJongsteKlant(int simulatie_id)
+        public async Task<List<NaamMetAantalKlantedDTO>> GeefKlantenDistributieAchternamenVanSimulatie(int simulatie_id)
         {
-            return _repo.InfoJongsteKlant(simulatie_id);
+            return await _repo.GeefKlantenDistributieAchternamenVanSimulatie(simulatie_id);
+        }
+
+
+        public async Task<KlantDTO> InfoOudsteKlant(int simulatie_id)
+        {
+            return await _repo.InfoOudsteKlant(simulatie_id);
+        }
+
+        public async Task<KlantDTO> InfoJongsteKlant(int simulatie_id)
+        {
+            return await  _repo.InfoJongsteKlant(simulatie_id);
+        }
+
+
+        public async Task<List<Klant>> GeefKlanten(int simulatie_id)
+        {
+            return await _repo.GeefKlanten(simulatie_id);
         }
 
     }

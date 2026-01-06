@@ -24,15 +24,15 @@ namespace KlantenSimulatorBL.Domein
 
         public int? Id { get; set; }
 
-        private string naam;
-        public string Naam {  get=> naam; 
+        private string _naam;
+        public string Naam {  get=> _naam; 
             set {
                 if (string.IsNullOrEmpty(value)|| string.IsNullOrEmpty(value.Trim())) {
                     throw new KlantenException("Land.Naam is null or empty");
                 }
                 else
                 {
-                    naam = value;
+                    _naam = value;
                 } 
             
             } }

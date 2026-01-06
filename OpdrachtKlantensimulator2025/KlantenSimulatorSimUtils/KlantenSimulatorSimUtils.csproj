@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\KlantenSimulatorBL\KlantenSimulatorBL.csproj" />
     <ProjectReference Include="..\KlantenSimulatorDLDatabank\KlantenSimulatorDLDatabank.csproj" />
+    <ProjectReference Include="..\KlantenSimulatorDLExporters\KlantenSimulatorDLExporters.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,7 +7,9 @@ using KlantenSimulatorDatabaseInitialiserDL.interfaces;
 using KlantenSimulatorDatabaseInitialiserDL.Lezers;
 using KlantenSimulatorDLDatabank;
 using KlantenSimulatorDLDataSetLezers.Lezers;
-using KlantenSimulatorInitialisationUtils.DTO;
+using KlantenSimulatorInitialisationUtils.DTO.ConstructorStraatJsonLezerDTO;
+using KlantenSimulatorInitialisationUtils.DTO.NaamConstructerInfo;
+using KlantenSimulatorInitialisationUtils.DTO.StadConstructorInfo;
 using System;
 namespace KlantenSimulatorUtils
 {
@@ -16,123 +18,78 @@ namespace KlantenSimulatorUtils
         private string _naamDataset;
         private string _landnaam;
 
-        private string _wegPad;
+        private IConstructorStreetLezerDTO _wegPad;
 
-        private List<IConstructorNaamLezerDTO> _infoNaamRepos;
+        private IConstructorNaamLezerDTO _voornamenV;
+        private IConstructorNaamLezerDTO _voornamenM;
+        private IConstructorNaamLezerDTO _achternamenV;
+        private IConstructorNaamLezerDTO _achternamenM;
+
+        private bool _zijnAchternamenNeutraal;
 
         private string _databankConnectionString;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="landnaam">Naam van het Land</param>
-        /// <param name="straadPad">Het Pad naar het bestand met de StraatenData</param>
-        /// <param name="infoNaamRepos">De Info van de repos van de Namen
-        /// 3 namen = vrouwelijve Voornamen, manelijke Voornamen, onzijdige achternamen
-        /// 4 namen = vrouwelijve Voornamen, manelijke Voornamen, vrouwelijve achternamen. manelijke achternamen
-        /// </param>
-        /// <exception cref="ArgumentException"></exception>
-        public InitialisationFactory(string naamDataset , string landnaam, string straadPad, List<IConstructorNaamLezerDTO> infoNaamRepos,string databankConnectionString)
+       
+
+
+        public InitialisationFactory(string naamDataset , string landnaam, IConstructorStreetLezerDTO straadPad, IConstructorNaamLezerDTO voornamenV
+, IConstructorNaamLezerDTO voornamenM, IConstructorNaamLezerDTO achternamenV, IConstructorNaamLezerDTO achternamenM, string databankConnectionString)
         {
             ArgumentException.ThrowIfNullOrEmpty(landnaam, nameof(landnaam));
             _landnaam = landnaam;
             
             ArgumentException.ThrowIfNullOrEmpty(databankConnectionString, nameof(databankConnectionString));
             _databankConnectionString = databankConnectionString;
-            ArgumentException.ThrowIfNullOrEmpty(straadPad, nameof(straadPad));
             _wegPad = straadPad;
             ArgumentException.ThrowIfNullOrEmpty(naamDataset, nameof(naamDataset));
-            _naamDataset= naamDataset;
-            if (infoNaamRepos != null)
+            _naamDataset=naamDataset;
+            _voornamenV = (IConstructorNaamLezerDTO)voornamenV.Clone();
+            _voornamenM = (IConstructorNaamLezerDTO)voornamenM.Clone();
+            _achternamenM = (IConstructorNaamLezerDTO)achternamenM.Clone();
+            _achternamenV = (IConstructorNaamLezerDTO)achternamenV.Clone();
+            _zijnAchternamenNeutraal = false;
+        }
+
+        public InitialisationFactory(string naamDataset, string landnaam, IConstructorStreetLezerDTO straadPad, IConstructorNaamLezerDTO voornamenV
+, IConstructorNaamLezerDTO voornamenM, IConstructorNaamLezerDTO achternamen, string databankConnectionString)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(landnaam, nameof(landnaam));
+            _landnaam = landnaam;
+
+            ArgumentException.ThrowIfNullOrEmpty(databankConnectionString, nameof(databankConnectionString));
+            _databankConnectionString = databankConnectionString;
+          
+            _wegPad = straadPad;
+            ArgumentException.ThrowIfNullOrEmpty(naamDataset, nameof(naamDataset));
+            _naamDataset = naamDataset;
+            _voornamenV = (IConstructorNaamLezerDTO)voornamenV.Clone();
+            _voornamenM = (IConstructorNaamLezerDTO)voornamenM.Clone();
+            _achternamenM = (IConstructorNaamLezerDTO)achternamen.Clone();
+            _achternamenV = (IConstructorNaamLezerDTO)achternamen.Clone();
+            _zijnAchternamenNeutraal=true;
+        }
+
+        public Initialisatieservice MaakDomeinControler()
+        {
+            IStratenLezer stratenRepo = GeefWeglezer(_wegPad);
+            ILandDataSetLezer dataSetLezer;
+            if (_zijnAchternamenNeutraal)
             {
-                if (infoNaamRepos.Contains(null))
-                {
-                    throw new ArgumentException("infoNaamRepos contains null");
-                }
-                else
-                {
-                    switch (infoNaamRepos.Count)
-                    {
-                        case 3:
-                            if (!infoNaamRepos.Any(x => x.Geslacht == GramaticaalGeslacht.Onzijdig && x.NaamSoort == NaamSoort.AchterNaam))
-                            {
-                                throw new ArgumentException($"InitialisationFactory.infoNaamRepos with 3 elements needs AchterNaamOnzijdig");
-                            }
-                            if (!infoNaamRepos.Any(x => x.Geslacht == GramaticaalGeslacht.Man && x.NaamSoort == NaamSoort.Voornaam))
-                            {
-                                throw new ArgumentException($"InitialisationFactory.infoNaamRepos with 3 elements needs VoorNaamMan");
-                            }
-                            if (!infoNaamRepos.Any(x => x.Geslacht == GramaticaalGeslacht.Vrouw && x.NaamSoort == NaamSoort.Voornaam))
-                            {
-                                throw new ArgumentException($"InitialisationFactory.infoNaamRepos with 3 elements needs VoorNaamVrouw");
-                            }
-                            _infoNaamRepos = infoNaamRepos.Select(x => (IConstructorNaamLezerDTO)x.Clone()).ToList();
-
-                            break;
-
-                        case 4:
-                            if(!infoNaamRepos.Any(x =>x.Geslacht==GramaticaalGeslacht.Man && x.NaamSoort == NaamSoort.AchterNaam))
-                            {
-                                throw new ArgumentException($"InitialisationFactory.infoNaamRepos with 4 elements needs AchterNaamMan");
-                            }
-                            if (!infoNaamRepos.Any(x => x.Geslacht == GramaticaalGeslacht.Vrouw && x.NaamSoort == NaamSoort.AchterNaam))
-                            {
-                                throw new ArgumentException($"InitialisationFactory.infoNaamRepos with 4 elements needs AchterNaamVrouw");
-                            }
-                            if (!infoNaamRepos.Any(x => x.Geslacht == GramaticaalGeslacht.Man && x.NaamSoort == NaamSoort.Voornaam))
-                            {
-                                throw new ArgumentException($"InitialisationFactory.infoNaamRepos with 4 elements needs VoorNaamMan");
-                            }
-                            if (!infoNaamRepos.Any(x => x.Geslacht == GramaticaalGeslacht.Vrouw && x.NaamSoort == NaamSoort.Voornaam))
-                            {
-                                throw new ArgumentException($"InitialisationFactory.infoNaamRepos with 4 elements needs VoorNaamVrouw");
-                            }
-                            _infoNaamRepos = infoNaamRepos.Select(x => (IConstructorNaamLezerDTO)x.Clone()).ToList();
-                            break;
-
-                        default:  throw new ArgumentException($"{this.GetType().Name} doesn't accept a infoNaamRepos with {infoNaamRepos.Count} elements");
-                    }
-
-
-
-
-                }
-
-
+                 dataSetLezer = new DatasetLezerAchterNamenZonderGender(_naamDataset, stratenRepo,
+                     DTOToNamenLezer(_voornamenV, GramaticaalGeslacht.Vrouw, NaamSoort.Voornaam),
+                     DTOToNamenLezer(_voornamenM, GramaticaalGeslacht.Man, NaamSoort.Voornaam),
+                     DTOToNamenLezer(_achternamenV, GramaticaalGeslacht.Onzijdig, NaamSoort.AchterNaam));
             }
             else
             {
-                throw new ArgumentException("infoNaamRepos is null");
-            }
-        }
-
-       public Initialisatieservice MaakDomeinControler()
-        {
-            ILandDataSetLezer dataSetLezer;
-            IStratenLezer stratenRepo = new WegTextLezer(_wegPad, _landnaam);
-            switch (_infoNaamRepos.Count)
-            {
-                case 3:
-                    {
-                        IConstructorNaamLezerDTO InfoVoornamenV = _infoNaamRepos.Where(x=> x.NaamSoort == NaamSoort.Voornaam && x.Geslacht == GramaticaalGeslacht.Vrouw).First();
-                        IConstructorNaamLezerDTO InfoVoornamenM = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.Voornaam && x.Geslacht == GramaticaalGeslacht.Man).First();
-                        IConstructorNaamLezerDTO InfoFamilienamen = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.AchterNaam && x.Geslacht == GramaticaalGeslacht.Onzijdig).First();
-                        dataSetLezer = new DatasetLezerAchterNamenZonderGender(_naamDataset,stratenRepo, DTOToNamenLezer(InfoVoornamenV), DTOToNamenLezer(InfoVoornamenM), DTOToNamenLezer(InfoFamilienamen));
-                        break;
-                    }
-                case 4:
-                    {
-                        IConstructorNaamLezerDTO InfoVoornamenV = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.Voornaam && x.Geslacht == GramaticaalGeslacht.Vrouw).First();
-                        IConstructorNaamLezerDTO InfoVoornamenM = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.Voornaam && x.Geslacht == GramaticaalGeslacht.Man).First();
-                        IConstructorNaamLezerDTO InfoFamilienamenM = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.AchterNaam && x.Geslacht == GramaticaalGeslacht.Man).First();
-                        IConstructorNaamLezerDTO InfoFamilienamenV = _infoNaamRepos.Where(x => x.NaamSoort == NaamSoort.AchterNaam && x.Geslacht == GramaticaalGeslacht.Vrouw).First();
-
-                        dataSetLezer = new DatasetLezerAchterNamenMetGender(_naamDataset,stratenRepo, DTOToNamenLezer(InfoVoornamenV), DTOToNamenLezer(InfoVoornamenM), DTOToNamenLezer(InfoFamilienamenV), DTOToNamenLezer(InfoFamilienamenM));
-                        break;
-                    }
-                default: throw new Exception($"InitialisationFactory.MaakDomeinControler: doesn't accept a _infoNaamRepos with {_infoNaamRepos.Count} elements");
+                 dataSetLezer = new DatasetLezerAchterNamenMetGender(_naamDataset, stratenRepo,
+                     DTOToNamenLezer(_voornamenV,GramaticaalGeslacht.Vrouw, NaamSoort.Voornaam),
+                     DTOToNamenLezer(_voornamenM, GramaticaalGeslacht.Man, NaamSoort.Voornaam),
+                     DTOToNamenLezer(_achternamenV, GramaticaalGeslacht.Vrouw, NaamSoort.AchterNaam),
+                     DTOToNamenLezer(_achternamenM, GramaticaalGeslacht.Man, NaamSoort.AchterNaam));
 
             }
+
 
             LandDataSetManager dsm = new LandDataSetManager(new LandDataSetDBRepo(_databankConnectionString));
 
@@ -142,15 +99,33 @@ namespace KlantenSimulatorUtils
         }
 
 
-        private INamenLezer DTOToNamenLezer(IConstructorNaamLezerDTO DTO)
+        private INamenLezer DTOToNamenLezer(IConstructorNaamLezerDTO DTO,GramaticaalGeslacht Geslacht, NaamSoort NaamSoort)
         {
             if(DTO is ConstructorNaamJsonLezerDTO JsonDTO)
             {
-                return new NaamJsonLezer(JsonDTO.Path, JsonDTO.JsonPropertyName, JsonDTO.Geslacht, JsonDTO.NaamSoort);
+                return new NaamJsonLezer(JsonDTO.Path, JsonDTO.JsonPropertyName, Geslacht, NaamSoort);
             }
             else if(DTO is ConstructorNaamTextLezerDTO TextDTO)
             {
-                return new NaamTextLezer(TextDTO.Path, TextDTO.Seperator, TextDTO.NaamColom, TextDTO.FrequencyColom, TextDTO.NaamSoort, TextDTO.Geslacht);
+                return new NaamTextLezer(TextDTO.Path, TextDTO.Seperator, TextDTO.NaamColom, TextDTO.FrequencyColom, NaamSoort, Geslacht);
+            }
+            else
+            {
+                throw new NotImplementedException("InitialisationFactory.DTOToNamenLezer: IConstructorNaamLezerDTO is of a type not implemented");
+            }
+
+        }
+
+
+        private IStratenLezer GeefWeglezer(IConstructorStreetLezerDTO DTO)
+        {
+            if (DTO is ConstructorStraatJsonLezerDTO JsonDTO)
+            {
+                return new WegJsonLezer(JsonDTO.Path, JsonDTO.DotPathStraten, JsonDTO.DotPathSteden, _landnaam);
+            }
+            else if (DTO is ConstructorStraatTXTLezerDTO TextDTO)
+            {
+                return new WegTextLezer(TextDTO.Path, _landnaam);
             }
             else
             {

@@ -7,21 +7,20 @@ namespace KlantenSimulatorBL.Generator
 {
     public class SimulatieGenerator
     {
-        private LandDataSetManager dataSetManager;
+       
 
-        public SimulatieGenerator(LandDataSetManager dataSetManager)
+        public SimulatieGenerator()
         {
-            this.dataSetManager = dataSetManager;
+           ;
         }
 
        
 
 
-        public Simulatie generateSimulatie(SimulatieSetupDataDTO dataVoorSimulatie)
+        public async Task<Simulatie> generateSimulatieAsync(SimulatieSetupDataDTO dataVoorSimulatie, LandDataSet landData)
         {
            
              Random random = new Random(dataVoorSimulatie.Seed);
-            LandDataSet landData = dataSetManager.GetLandDataSet(dataVoorSimulatie.LandDataSetID);
           
             List<Straat> straten;
             HashSet<Stad> stedenlimitatie = new();

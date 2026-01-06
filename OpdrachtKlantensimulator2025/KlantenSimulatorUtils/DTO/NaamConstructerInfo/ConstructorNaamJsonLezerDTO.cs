@@ -5,27 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KlantenSimulatorInitialisationUtils.DTO
+namespace KlantenSimulatorInitialisationUtils.DTO.NaamConstructerInfo
 {
     public class ConstructorNaamJsonLezerDTO : IConstructorNaamLezerDTO
     {
-        public ConstructorNaamJsonLezerDTO(string path, GramaticaalGeslacht geslacht, NaamSoort naamSoort, string jsonPropertyName)
+        public ConstructorNaamJsonLezerDTO(string path, string jsonPropertyName)
         {
             Path = path;
-            Geslacht = geslacht;
-            NaamSoort = naamSoort;
             JsonPropertyName = jsonPropertyName;
         }
 
         public string Path { get; set; }
-        public GramaticaalGeslacht Geslacht { get; set; }
-        public NaamSoort NaamSoort { get; set; }
 
         public string JsonPropertyName { get; set; }
 
         public object Clone()
         {
-           return new ConstructorNaamJsonLezerDTO(Path,Geslacht, NaamSoort, JsonPropertyName);
+           return new ConstructorNaamJsonLezerDTO(Path, JsonPropertyName);
         }
     }
 }

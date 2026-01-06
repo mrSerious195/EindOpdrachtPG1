@@ -9,6 +9,8 @@ namespace KlantenSimulatorBL.DTO
     public class DetailedSimulatieDTO
     {
         public int Id { get; set; }
+
+        public int DatasetId { get; set; }
         public string OpdrachtGever { get; set; }
         public int SimulatieGrote { get; set; }
         public string NaamDataSet { get; set; }
@@ -30,8 +32,9 @@ namespace KlantenSimulatorBL.DTO
 
         public List<string> GelimiteerdTotSteden {  get; set; }
 
-        public DetailedSimulatieDTO(int id, string opdrachtGever, int simulatieGrote, string naamDataSet, string land, DateTime momentVanSimulatie, int seed, int minimumleeftijdSettings, int maximumleeftijdSettings, int aantalMogelijkeLettersInHuisNummer, float kansOpLettersInHuisNummer, float gemideldeSimulatieLeefrijdOpMomentVanAanMaak, float gemideldeSimulatieLeefrijdOpMomentVanOpvraagGegenens, List<string> gelimiteerdTotSteden)
+        public DetailedSimulatieDTO(int id, int datasetId, string opdrachtGever, int simulatieGrote, string naamDataSet, string land, DateTime momentVanSimulatie, int seed, int minimumleeftijdSettings, int maximumleeftijdSettings, int aantalMogelijkeLettersInHuisNummer, float kansOpLettersInHuisNummer, float gemideldeSimulatieLeefrijdOpMomentVanAanMaak, float gemideldeSimulatieLeefrijdOpMomentVanOpvraagGegenens, List<string> gelimiteerdTotSteden)
         {
+            DatasetId = datasetId;
             Id = id;
             OpdrachtGever = opdrachtGever;
             SimulatieGrote = simulatieGrote;

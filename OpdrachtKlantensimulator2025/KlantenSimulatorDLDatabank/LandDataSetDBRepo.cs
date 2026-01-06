@@ -6,7 +6,9 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Identity.Client;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Reflection.Metadata.Ecma335;
+using System.Threading.Tasks;
 
 namespace KlantenSimulatorDLDatabank
 {
@@ -198,7 +200,7 @@ namespace KlantenSimulatorDLDatabank
         }
 
 
-        public LandDataSet GetLandDataSet(int datasetId)
+        public async Task<LandDataSet> GetLandDataSet(int datasetId)
         {
             LandDataSet dataset;
             const string SqlStatementLand = "select id, naam from landen where id = @LandId";
@@ -210,7 +212,7 @@ namespace KlantenSimulatorDLDatabank
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
 
-                con.Open();
+                await con.OpenAsync();
                 int LandID;
                 bool ZijnAchternamenNeutraal;
                 string DatasetNaam;
@@ -218,12 +220,14 @@ namespace KlantenSimulatorDLDatabank
                 {
                     sqlcmdDataset.CommandText = SqlStatementDataset;
                     sqlcmdDataset.Parameters.AddWithValue("@datasetID", datasetId);
-                    IDataReader reader = sqlcmdDataset.ExecuteReader();
-                    reader.Read();
-                    LandID = (int)reader["land_id"];
-                    ZijnAchternamenNeutraal = (bool)reader["Zijn_achternamen_neutraal"];
-                    DatasetNaam = (string)reader["naam"];
-                    reader.Close();
+                    using (DbDataReader reader = await sqlcmdDataset.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
+                        LandID = (int)reader["land_id"];
+                        ZijnAchternamenNeutraal = (bool)reader["Zijn_achternamen_neutraal"];
+                        DatasetNaam = (string)reader["naam"];
+                        reader.Close();
+                    }
 
                 }
                 Land land;
@@ -231,10 +235,12 @@ namespace KlantenSimulatorDLDatabank
                 {
                     sqlcmdLand.CommandText = SqlStatementLand; ;
                     sqlcmdLand.Parameters.AddWithValue("@LandId", LandID);
-                    IDataReader reader = sqlcmdLand.ExecuteReader();
-                    reader.Read();
-                    land = new((int)reader["id"], (string)reader["naam"]);
-                    reader.Close();
+                    using (DbDataReader reader = await sqlcmdLand.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
+                        land = new((int)reader["id"], (string)reader["naam"]);
+                        reader.Close();
+                    }
                 }
 
                 Dictionary<int, Stad> IdToSteden = new();
@@ -255,13 +261,15 @@ namespace KlantenSimulatorDLDatabank
                 {
                     sqlcmdstraat.CommandText = SqlStatementStraat;
                     sqlcmdstraat.Parameters.AddWithValue("@datasetID", datasetId);
-                    IDataReader reader = sqlcmdstraat.ExecuteReader();
-                    while (reader.Read())
+                    using (DbDataReader reader = await sqlcmdstraat.ExecuteReaderAsync())
                     {
-                        Straat straat = new((int)reader["id"], IdToSteden[(int)reader["stad_id"]], (string)reader["naam"]);
-                        straten.Add(straat);
+                        while (await reader.ReadAsync())
+                        {
+                            Straat straat = new((int)reader["id"], IdToSteden[(int)reader["stad_id"]], (string)reader["naam"]);
+                            straten.Add(straat);
+                        }
+                        reader.Close();
                     }
-                    reader.Close();
                 }
 
 
@@ -270,65 +278,68 @@ namespace KlantenSimulatorDLDatabank
                 {
                     sqlcmdNaam.CommandText = SqlStatementNaam;
                     sqlcmdNaam.Parameters.AddWithValue("@datasetID", datasetId);
-                    IDataReader reader = sqlcmdNaam.ExecuteReader();
-                    List<NaamInfo> voornamenM = new();
-                    List<NaamInfo> voornamenV = new();
-                    if (ZijnAchternamenNeutraal)
+                    using (DbDataReader reader = await sqlcmdNaam.ExecuteReaderAsync())
                     {
-                        List<NaamInfo> AchterNamen = new();
-                        while (reader.Read()) {
-                            GramaticaalGeslacht geslacht = CharToGramaticaalgeslacht(((string)reader["gender"])[0]);
-
-                            NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort), (string)reader["naam_type"]);
-                            List<NaamInfo> naamlijst;
-
-                            switch ((geslacht, naamsoort))
-                            {
-                                case (GramaticaalGeslacht.Man, NaamSoort.Voornaam): naamlijst = voornamenM; break;
-                                case (GramaticaalGeslacht.Vrouw, NaamSoort.Voornaam): naamlijst = voornamenV; break;
-                                case (GramaticaalGeslacht.Onzijdig, NaamSoort.AchterNaam): naamlijst = AchterNamen; break;
-                                default: throw new Exception($"DatasetDBRepo.GetLandDataSet: een naam kan niet een ( {geslacht.ToString()} ,{naamsoort.ToString()} ) zijn als achternamen neutraal zijn");
-                            }
-                            NaamInfo naam = new((int)reader["id"], (string)reader["naam"], (int)reader["frequency"], geslacht, naamsoort);
-                            naamlijst.Add(naam);
-
-                        }
-
-                        dataset = new LandDataSet(datasetId, ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamen, AchterNamen, straten);
-                    }
-                    else
-                    {
-                        List<NaamInfo> AchterNamenM = new();
-                        List<NaamInfo> AchterNamenV = new();
-
-                        while (reader.Read())
+                        List<NaamInfo> voornamenM = new();
+                        List<NaamInfo> voornamenV = new();
+                        if (ZijnAchternamenNeutraal)
                         {
-                            GramaticaalGeslacht geslacht = CharToGramaticaalgeslacht(((string)reader["gender"])[0]);
-
-                            NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort), (string)reader["naam_type"]);
-                            List<NaamInfo> naamlijst;
-
-                            switch ((geslacht, naamsoort))
+                            List<NaamInfo> AchterNamen = new();
+                            while (await reader.ReadAsync())
                             {
-                                case (GramaticaalGeslacht.Man, NaamSoort.Voornaam): naamlijst = voornamenM; break;
-                                case (GramaticaalGeslacht.Vrouw, NaamSoort.Voornaam): naamlijst = voornamenV; break;
-                                case (GramaticaalGeslacht.Man, NaamSoort.AchterNaam): naamlijst = AchterNamenM; break;
-                                case (GramaticaalGeslacht.Vrouw, NaamSoort.AchterNaam): naamlijst = AchterNamenV; break;
-                                default:
-                                    throw new Exception($"DatasetDBRepo.GetLandDataSet: een naam kan niet een ( {geslacht.ToString()} ,{naamsoort.ToString()} ) zijn als achternamen niet neutraal zijn");
+                                GramaticaalGeslacht geslacht = CharToGramaticaalgeslacht(((string)reader["gender"])[0]);
+
+                                NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort), (string)reader["naam_type"]);
+                                List<NaamInfo> naamlijst;
+
+                                switch ((geslacht, naamsoort))
+                                {
+                                    case (GramaticaalGeslacht.Man, NaamSoort.Voornaam): naamlijst = voornamenM; break;
+                                    case (GramaticaalGeslacht.Vrouw, NaamSoort.Voornaam): naamlijst = voornamenV; break;
+                                    case (GramaticaalGeslacht.Onzijdig, NaamSoort.AchterNaam): naamlijst = AchterNamen; break;
+                                    default: throw new Exception($"DatasetDBRepo.GetLandDataSet: een naam kan niet een ( {geslacht.ToString()} ,{naamsoort.ToString()} ) zijn als achternamen neutraal zijn");
+                                }
+                                NaamInfo naam = new((int)reader["id"], (string)reader["naam"], (int)reader["frequency"], geslacht, naamsoort);
+                                naamlijst.Add(naam);
+
                             }
-                            NaamInfo naam = new((int)reader["id"], (string)reader["naam"], (int)reader["frequency"], geslacht, naamsoort);
-                            naamlijst.Add(naam);
+
+                            dataset = new LandDataSet(datasetId, ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamen, AchterNamen, straten);
+                        }
+                        else
+                        {
+                            List<NaamInfo> AchterNamenM = new();
+                            List<NaamInfo> AchterNamenV = new();
+
+                            while (await reader.ReadAsync())
+                            {
+                                GramaticaalGeslacht geslacht = CharToGramaticaalgeslacht(((string)reader["gender"])[0]);
+
+                                NaamSoort naamsoort = (NaamSoort)Enum.Parse(typeof(NaamSoort), (string)reader["naam_type"]);
+                                List<NaamInfo> naamlijst;
+
+                                switch ((geslacht, naamsoort))
+                                {
+                                    case (GramaticaalGeslacht.Man, NaamSoort.Voornaam): naamlijst = voornamenM; break;
+                                    case (GramaticaalGeslacht.Vrouw, NaamSoort.Voornaam): naamlijst = voornamenV; break;
+                                    case (GramaticaalGeslacht.Man, NaamSoort.AchterNaam): naamlijst = AchterNamenM; break;
+                                    case (GramaticaalGeslacht.Vrouw, NaamSoort.AchterNaam): naamlijst = AchterNamenV; break;
+                                    default:
+                                        throw new Exception($"DatasetDBRepo.GetLandDataSet: een naam kan niet een ( {geslacht.ToString()} ,{naamsoort.ToString()} ) zijn als achternamen niet neutraal zijn");
+                                }
+                                NaamInfo naam = new((int)reader["id"], (string)reader["naam"], (int)reader["frequency"], geslacht, naamsoort);
+                                naamlijst.Add(naam);
+
+                            }
+                            dataset = new LandDataSet(datasetId, ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamenM, AchterNamenV, straten);
 
                         }
-                        dataset = new LandDataSet(datasetId, ZijnAchternamenNeutraal, DatasetNaam, land, voornamenM, voornamenV, AchterNamenM, AchterNamenV, straten);
-
+                        reader.Close();
                     }
-                    reader.Close();
+                    }
+
+
                 }
-
-
-            }
 
             return dataset;
         }
@@ -346,64 +357,122 @@ namespace KlantenSimulatorDLDatabank
             }
         }
 
-        public List<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo()
+        public async Task<List<SimpeleLandDataSetDTO>> GeefSimpeleDataSetInfo()
         {
             List<SimpeleLandDataSetDTO> ret = new();
-            const string SqlStatement = "select ld.id, l.naam as Land, ld.naam as dataset,  s.aantal as steden, vn.aantal as voornamen, an.aantal as achternamen from landen l join land_datasets ld on ld.land_id = l.id join (select count(id) as aantal, dataset_id from steden group by dataset_id) s on s.dataset_id=ld.id join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType group by dataset_id) vn on vn.dataset_id=ld.id join (select count(id) as aantal, dataset_id from namen where naam_type=@AchterNaamType group by dataset_id) an on an.dataset_id=ld.id";
+            const string SqlStatement = " select ld.id,\r\n             l.naam as Land,\r\n             ld.naam as dataset,\r\n             s.aantal as steden,\r\n             vn.aantal as vrouwenamen,\r\n             mn.aantal as mannenamen,\r\n             an.aantal as achternamen\r\n         from landen l\r\n         join land_datasets ld on ld.land_id = l.id\r\n         join (select count(id) as aantal, dataset_id from steden group by dataset_id) s on s.dataset_id=ld.id\r\n         join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType and gender =@vrouwchar group by dataset_id) vn on vn.dataset_id=ld.id\r\n            join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType and gender =@manchar group by dataset_id) mn on mn.dataset_id=ld.id\r\n         join (select count(id) as aantal, dataset_id from namen where naam_type=@AchterNaamType group by dataset_id) an on an.dataset_id=ld.id";
             /*
              select ld.id,
              l.naam as Land,
              ld.naam as dataset,
              s.aantal as steden,
-             vn.aantal as voornamen,
+             vn.aantal as vrouwenamen,
+             mn.aantal as mannenamen,
              an.aantal as achternamen
          from landen l
          join land_datasets ld on ld.land_id = l.id
          join (select count(id) as aantal, dataset_id from steden group by dataset_id) s on s.dataset_id=ld.id
-         join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType group by dataset_id) vn on vn.dataset_id=ld.id
+         join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType and gender =@vrouwchar group by dataset_id) vn on vn.dataset_id=ld.id
+            join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType and gender =@manchar group by dataset_id) mn on mn.dataset_id=ld.id
          join (select count(id) as aantal, dataset_id from namen where naam_type=@AchterNaamType group by dataset_id) an on an.dataset_id=ld.id
              */
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
 
-                con.Open();
+               await con.OpenAsync();
                 using (SqlCommand cmd = con.CreateCommand())
                 {
                     cmd.CommandText = SqlStatement;
                     cmd.Parameters.AddWithValue("@VoornaamType", NaamSoort.Voornaam.ToString());
                     cmd.Parameters.AddWithValue("@AchterNaamType", NaamSoort.AchterNaam.ToString());
-                    IDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read()) {
-                        SimpeleLandDataSetDTO dto = new((int)reader["id"], (string)reader["dataset"], (string)reader["Land"], (int)reader["voornamen"], (int)reader["achternamen"], (int)reader["steden"]);
-                        ret.Add(dto);
+                    cmd.Parameters.AddWithValue("@vrouwchar", GramaticaalGeslacht.Vrouw.ToString()[0]);
+                    cmd.Parameters.AddWithValue("@manchar", GramaticaalGeslacht.Man.ToString()[0]);
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            SimpeleLandDataSetDTO dto = new((int)reader["id"], (string)reader["dataset"], (string)reader["Land"], (int)reader["vrouwenamen"], (int)reader["mannenamen"], (int)reader["achternamen"], (int)reader["steden"]);
+                            ret.Add(dto);
+                        }
+                        reader.Close();
                     }
-                    reader.Close();
                 }
 
             }
             return ret;
         }
 
-        
 
-        public List<StadDTO> GeefInfoSteden(int datasetId)
+
+        public async Task<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo(int datasetId)
         {
-            List<StadDTO> ret = new();
-            const string SqlStatement = "select id, naam from steden where dataset_id = @datasetID";
+            SimpeleLandDataSetDTO ret;
+            const string SqlStatement = " select ld.id,\r\n             l.naam as Land,\r\n             ld.naam as dataset,\r\n             s.aantal as steden,\r\n             vn.aantal as vrouwenamen,\r\n             mn.aantal as mannenamen,\r\n             an.aantal as achternamen\r\n         from landen l\r\n         join land_datasets ld on ld.land_id = l.id\r\n         join (select count(id) as aantal, dataset_id from steden group by dataset_id) s on s.dataset_id=ld.id\r\n         join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType and gender =@vrouwchar group by dataset_id) vn on vn.dataset_id=ld.id\r\n            join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType and gender =@manchar group by dataset_id) mn on mn.dataset_id=ld.id\r\n         join (select count(id) as aantal, dataset_id from namen where naam_type=@AchterNaamType group by dataset_id) an on an.dataset_id=ld.id   where ld.id =@datasetId";
+            /*
+             select ld.id,
+             l.naam as Land,
+             ld.naam as dataset,
+             s.aantal as steden,
+             vn.aantal as vrouwenamen,
+             mn.aantal as mannenamen,
+             an.aantal as achternamen
+         from landen l
+         join land_datasets ld on ld.land_id = l.id
+         join (select count(id) as aantal, dataset_id from steden group by dataset_id) s on s.dataset_id=ld.id
+         join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType and gender =@vrouwchar group by dataset_id) vn on vn.dataset_id=ld.id
+            join (select count(id) as aantal, dataset_id from namen where naam_type=@VoornaamType and gender =@manchar group by dataset_id) mn on mn.dataset_id=ld.id
+         join (select count(id) as aantal, dataset_id from namen where naam_type=@AchterNaamType group by dataset_id) an on an.dataset_id=ld.id
+           where ld.id =@datasetId
+             */
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                con.Open();
+
+                await con.OpenAsync();
+                using (SqlCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = SqlStatement;
+                    cmd.Parameters.AddWithValue("@VoornaamType", NaamSoort.Voornaam.ToString());
+                    cmd.Parameters.AddWithValue("@AchterNaamType", NaamSoort.AchterNaam.ToString());
+                    cmd.Parameters.AddWithValue("@vrouwchar", GramaticaalGeslacht.Vrouw.ToString()[0]);
+                    cmd.Parameters.AddWithValue("@manchar", GramaticaalGeslacht.Man.ToString()[0]);
+                    cmd.Parameters.AddWithValue("@datasetId", datasetId);
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
+                             ret = new SimpeleLandDataSetDTO((int)reader["id"], (string)reader["dataset"], (string)reader["Land"],
+                                (int)reader["vrouwenamen"], (int)reader["mannenamen"], (int)reader["achternamen"], (int)reader["steden"]);
+                          
+                        
+                        reader.Close();
+                    }
+                }
+
+            }
+            return ret;
+        }
+
+
+
+        public async Task<List<StadDTO>> GeefInfoSteden(int datasetId)
+        {
+            List<StadDTO> ret = new();
+            const string SqlStatement = "select se.id, se.naam, count(sta.id) as aantalstraten from steden se join straten sta on sta.stad_id=se.id where dataset_id = @datasetID group by se.id,se.naam";
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
                 using (SqlCommand cmd = con.CreateCommand())
                 {
                     cmd.CommandText = SqlStatement;
                     cmd.Parameters.AddWithValue("@datasetID", datasetId);
-                    IDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
                     {
-                        StadDTO stad = new((string)reader["naam"], (int)reader["id"]);
-                        ret.Add(stad);
+                        while (await reader.ReadAsync())
+                        {
+                            StadDTO stad = new((string)reader["naam"], (int)reader["id"], (int)reader["aantalstraten"]);
+                            ret.Add(stad);
+                        }
+                        reader.Close();
                     }
-                    reader.Close();
                 }
                
             }

@@ -32,12 +32,12 @@ namespace KlantenSimulatorGUI
         }
 
 
-        public void SaveClick(object sender, RoutedEventArgs e)
+        public async void SaveClick(object sender, RoutedEventArgs e)
         {
             string nieuwWeOpdrachtGever = NameBox.Text;
-            _simService.VoegOpdrachtGeverToe(nieuwWeOpdrachtGever);
+            await _simService.VoegOpdrachtGeverToe(nieuwWeOpdrachtGever);
             _alleopdrachtgevers.Add(nieuwWeOpdrachtGever);
-
+            this.Close();
         }
     }
 }

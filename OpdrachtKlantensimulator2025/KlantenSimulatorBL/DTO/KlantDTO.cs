@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KlantenSimulatorBL.DTO
 {
-    public class KlantenDTO
+    public class KlantDTO
     {
         public string Voornaam {  get; set; }
         public string AchterNaam { get; set; }
@@ -24,7 +24,7 @@ namespace KlantenSimulatorBL.DTO
 
         public DateTime GeboorteDatum {  get; set; }
 
-        public KlantenDTO(string voornaam, string achterNaam, Geslacht geslacht, string huisNr, string straat, string stad, string land, DateTime geboorteDatum)
+        public KlantDTO(string voornaam, string achterNaam, Geslacht geslacht, string huisNr, string straat, string stad, string land, DateTime geboorteDatum)
         {
             Voornaam = voornaam;
             AchterNaam = achterNaam;

@@ -7,7 +7,7 @@ string databankpad = @"Data Source=ROWALD\SQLEXPRESS; Initial Catalog = klantenG
 SimulatieService serv =KlantenSimulatieFactory.GeefServise(databankpad);
 
 SimulatieSetupDataDTO data = new(1,2, 18, 100, 25, 5, 5000, 0.1f, "Ilias", new());
-Simulatie sim = serv.genereerSimulatie(data);
+Simulatie sim = serv.genereerSimulatieAsync(data);
 
 
 Console.WriteLine($"simuleerde {sim.Klanten.Count} klanten");

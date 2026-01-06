@@ -25,10 +25,7 @@ namespace KlantenSimulatorBL.DomeinControlers
 
        
 
-        public LandDataSet testrepo(int id)
-        {
-            return _dataSetManager.GetLandDataSet(id);
-        }
+       
 
         public void SaveDataSet()
         {

@@ -16,25 +16,36 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
 
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="25"/>
             <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition  Width="auto"/>
         </Grid.ColumnDefinitions>
         <Label Content="Generatie Gegevens" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
         <TextBlock Name ="SimulatieGegevensBlock" Text="Generatie Gegevens" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1"/>
+        <Button Content="Extra Info Land_Dataset" Click="ExtraInfoDataset" Grid.Column="2" Grid.Row="1"/>
+        <Label Content="Vrouwen met namen" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"/>
+        <DataGrid Name="VrouwenNamenGrid" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3"/>
 
-        <Label Content="Klanten per naam" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"/>
-        <DataGrid Name="NaamKlandGrid" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3"/>
+        <Label Content="Mannen met namen" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4"/>
+        <DataGrid Name="ManneNammenGrid" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5"/>
 
-        <Label Content="Klanten per stad" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4"/>
-        <DataGrid Name="StadKlandGrid" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5"/>
+        <Label Content="AchterNamen" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6"/>
+        <DataGrid Name="AchterNamenGrid" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7"/>
 
-        <Label Content="Extra info" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6"/>
-        <TextBlock Name ="ExtraInfoBlock" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7"/>
-        
+        <Label Content="Klanten per stad" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8"/>
+        <DataGrid Name="StadKlandGrid" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="9"/>
+
+        <Label Content="Extra info" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="10"/>
+        <TextBlock Name ="ExtraInfoBlock" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="11"/>
+       
+
 
 
     </Grid>

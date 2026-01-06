@@ -12,14 +12,16 @@ namespace KlantenSimulatorBL.Managers
             _repo = repo;
         }
 
-        public List<string> GeefAlleOpdrachtGevers()
+        public async Task<List<string>> GeefAlleOpdrachtGeversAsync()
         {
-            return _repo.GeefAlleOpdrachtGevers();
+            return await _repo.GeefAlleOpdrachtGevers();
         }
 
-        public void VoegOpdrachtGeverToe(string naam)
+        public async Task VoegOpdrachtGeverToe(string naam)
         {
-            _repo.VoegOpdrachtGeverToe(naam);
+            await _repo.VoegOpdrachtGeverToe(naam);
         }
+
+
     }
 }

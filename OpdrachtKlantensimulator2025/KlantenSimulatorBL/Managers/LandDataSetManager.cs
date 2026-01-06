@@ -23,20 +23,24 @@ namespace KlantenSimulatorBL.Managers
             _repo.SaveLandDataSet(landData);
         }
 
-        public LandDataSet GetLandDataSet(int DatasetId)
+        public async Task<LandDataSet> GetLandDataSetAsync(int DatasetId)
         {
-            return _repo.GetLandDataSet(DatasetId);
+            return await _repo.GetLandDataSet(DatasetId);
         }
 
-        public List<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo()
+        public async Task<List<SimpeleLandDataSetDTO>> GeefSimpeleDataSetInfoAsync()
         {
-            return _repo.GeefSimpeleDataSetInfo();
+            return await _repo.GeefSimpeleDataSetInfo();
         }
 
-        public List<StadDTO> GeefInfoSteden(int datasetID)
+        public async Task<List<StadDTO>> GeefInfoStedenAsync(int datasetID)
         {
-            return _repo.GeefInfoSteden(datasetID);
+            return await _repo.GeefInfoSteden(datasetID);
         }
 
+        public async Task<SimpeleLandDataSetDTO> GeefSimpeleDataSetInfo(int datasetId)
+        {
+            return await _repo.GeefSimpeleDataSetInfo( datasetId);
+        }
     }
 }

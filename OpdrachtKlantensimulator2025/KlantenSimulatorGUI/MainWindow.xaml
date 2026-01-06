@@ -8,32 +8,37 @@
         Title="Klanten Simulator" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-        </Grid.ColumnDefinitions>
-        <Button Content="Generate new dataset" Click="NieuseSimulatie"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
-        <Button Content="Search" Click="SearchSimulaties" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"/>
-        <TextBox Name="Searchbox" TextWrapping="Wrap" Text="" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="0"/>
-        
-        <RadioButton GroupName="SearchOption"  Name="DatasetRadioButton" IsChecked="True" Content="Dataset" Grid.Column="2" Grid.Row="1"/>
-        <RadioButton GroupName="SearchOption"  Name="LandRadioButton" Content="Land" Grid.Column="3" Grid.Row="1"/>
-        <RadioButton GroupName="SearchOption"  Name="OpdrachtGeverRadioButton" Content="Opdrachtgever" Grid.Column="4" Grid.Row="1"/>
-        <DataGrid x:Name="SimpleSimGrid" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2" AutoGenerateColumns="True" d:ItemsSource="{d:SampleData ItemCount=5}">
-            <DataGrid.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="More Info" Click="MoreInfoClicked"/>
-                </ContextMenu>
-            </DataGrid.ContextMenu>
-        </DataGrid>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
 
+        <Button Margin="5" Content="Generate new dataset" Click="NieuseSimulatie"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="1"/>
+        <Button Margin="5" Content="Search" Click="SearchSimulaties" Grid.Column="1" Grid.Row="0" Grid.RowSpan="1"/>
+        <TextBox Margin="5" Name="Searchbox" TextWrapping="Wrap" Text="" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="0"/>
+
+        <RadioButton Margin="5" GroupName="SearchOption"  Name="DatasetRadioButton" IsChecked="True" Content="Dataset" Grid.Column="2" Grid.Row="1"/>
+        <RadioButton Margin="5" GroupName="SearchOption"  Name="LandRadioButton" Content="Land" Grid.Column="3" Grid.Row="1"/>
+        <RadioButton Margin="5" GroupName="SearchOption"  Name="OpdrachtGeverRadioButton" Content="Opdrachtgever" Grid.Column="4" Grid.Row="1"/>
+        <DataGrid Margin="5" x:Name="SimpleSimGrid"  IsReadOnly ="True"  Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2" AutoGenerateColumns="True" d:ItemsSource="{d:SampleData ItemCount=5}">
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="More Info" Click="MoreInfoClicked"/>
+                        <MenuItem Header="Export">
+                            <MenuItem Header="Metadata Als .txt" Click="ExportMetadataAsText"/>
+                            <MenuItem Header="Als .txt met Klanten" Click="ExportSimulatieMetaDataAlsTextMetKlanten"/>
+                            <MenuItem Header="Metadata Als .Json" Click="ExportMetaDataAsJson"/>
+                        </MenuItem>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+            </DataGrid>
 
 
 

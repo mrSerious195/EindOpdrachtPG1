@@ -5,19 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KlantenSimulatorGUI"
         mc:Ignorable="d"
-        Title="Niewe OpdrachtGever" Height="200" Width="200">
+        Title="Niewe OpdrachtGever" Height="100" Width="400">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Label Content="Naam"/>
 
-        <TextBox Name="NameBox" Grid.Column="1" TextWrapping="Wrap" Text="" Width="120"/>
-        <Button  Click ="SaveClick"  Content="Save" Grid.Row="1" Grid.ColumnSpan="2" />
+        <TextBox Margin="5" Name="NameBox" Grid.Column="1" TextWrapping="Wrap" Text=""/>
+        <Button  Margin="5" Click ="SaveClick"  Content="Save" Grid.Row="1" Grid.ColumnSpan="2" />
     </Grid>
 </Window>

@@ -34,7 +34,7 @@ namespace KlantenSimulatorBL.Domein
         public string _voornaam;
         public string VoorNaam { get=> _voornaam; set
             {
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(value.Trim()))
                 {
                     throw new KlantenException("Kland.VoorNaam is null or empty");
                 }
@@ -50,7 +50,7 @@ namespace KlantenSimulatorBL.Domein
         {
             get => _familienaam; set
             {
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value)|| string.IsNullOrEmpty(value.Trim()))
                 {
                     throw new KlantenException("Kland.Familienaam is null or empty");
                 }

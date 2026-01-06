@@ -17,7 +17,7 @@ namespace KlantenSimulatorDLDataSetLezers.Lezers
         private string _path = @"C:\Users\rowal\Downloads\SourceData\SourceData\Polen\pl.locale.json";
         private string _propertyName = "name.first_name_male";
         private GramaticaalGeslacht _geslacht;
-        private NaamSoort naamSoort;
+        private NaamSoort _naamSoort;
 
 
         public NaamJsonLezer(string path, string propertyName, GramaticaalGeslacht geslacht, NaamSoort naamSoort)
@@ -25,7 +25,7 @@ namespace KlantenSimulatorDLDataSetLezers.Lezers
             _path = path;
             _propertyName = propertyName;
             _geslacht = geslacht;
-            this.naamSoort = naamSoort;
+            _naamSoort = naamSoort;
         }
 
         public List<NaamInfo> GeefAlleNamen()
@@ -49,7 +49,7 @@ namespace KlantenSimulatorDLDataSetLezers.Lezers
                 }
                
             }
-            return namen.Select(n => new NaamInfo(n, 1, _geslacht, naamSoort)).ToList();
+            return namen.Select(n => new NaamInfo(n, 1, _geslacht, _naamSoort)).ToList();
         }
     }
 }

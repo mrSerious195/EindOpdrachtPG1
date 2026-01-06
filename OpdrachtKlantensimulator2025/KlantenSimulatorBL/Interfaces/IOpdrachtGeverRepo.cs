@@ -2,7 +2,7 @@
 {
     public interface IOpdrachtGeverRepo
     {
-        public List<string> GeefAlleOpdrachtGevers();
-        public void VoegOpdrachtGeverToe(string naam);
+        public Task<List<string>> GeefAlleOpdrachtGevers();
+        public Task VoegOpdrachtGeverToe(string naam);
     }
 }

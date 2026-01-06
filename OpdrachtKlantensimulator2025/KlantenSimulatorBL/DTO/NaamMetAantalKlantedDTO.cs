@@ -11,15 +11,13 @@ namespace KlantenSimulatorBL.DTO
     {
         public string Naam { get; set; }
 
-        public NaamSoort NaamSoort { get; set; }
+        public int AantalKlantenMetNaam {  get; set; }
 
-        public int AantalKlanten {  get; set; }
-
-        public NaamMetAantalKlantedDTO(string naam, NaamSoort naamSoort, int aantalKlanten)
+        public NaamMetAantalKlantedDTO(string naam, int aantalKlanten)
         {
             Naam = naam;
-            NaamSoort = naamSoort;
-            AantalKlanten = aantalKlanten;
+         
+            AantalKlantenMetNaam = aantalKlanten;
         }
     }
 }
