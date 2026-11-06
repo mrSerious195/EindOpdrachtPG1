@@ -8,4 +8,4 @@ Voor deze opdracht moest ik:
 Voor dit project moest ik de volgende technologieën gebruiken:
 - C#
 - WPF
-- ADO .NET
+- ADO.NET
